@@ -1,0 +1,141 @@
+/* CSS Document */
+:root{
+    --btn-icon: url('../images/magnifier-glass-icon.png');
+}
+
+@keyframes header-btn-before-anim {
+    from{
+        background-color: transparent;
+        border-radius: 50%;
+        background-image: var(--btn-icon);
+        background-position: 50% 80%;
+        background-repeat: no-repeat;
+        background-size: 25% 25%;
+    }
+    to{
+        background-color: #ECB159;
+        border-radius: 10%;
+        border-bottom: solid white 4px;
+        border-top: 0;
+        background-image: var(--btn-icon);
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        background-size: 25% 25%;
+    }
+}
+
+html, body{
+    margin: 0; padding: 0; left: 0; top: 0;
+}
+body{
+    position: relative;
+    display: flex;
+}
+
+
+header{
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 15%;
+
+    background-image: linear-gradient(to right, #FEFBF6 20%, #ECB159);
+    border-bottom: #ECB159 solid 2px;
+    display: flex;
+    flex-direction: row;
+}
+
+#header-left-side{
+    position: relative;
+    height: 100%; width: 50%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+#header-image-logo{
+    position: relative;
+    height: 80%;
+    left: 10px;
+    cursor: pointer;
+}
+
+#header-right-side{
+    position: relative;
+    height: 100%; width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    
+    flex-wrap: nowrap;
+    align-items: center;
+    color: #FEFBF6;
+}
+
+.header-btn{
+    text-decoration: none;
+    color: #FEFBF6;
+    font-family: Arial;
+    font-size: 1.1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.header-btn::before{
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: 20%; height: 80%;
+    border-top: #FEFBF6 solid 4px;
+}
+.header-btn:hover::before{
+    animation: header-btn-before-anim 0.4s forwards;
+}
+.header-btn:hover{
+    color: transparent;
+}
+.header-btn img{
+    height: 1;
+}
+
+footer{
+    position: relative;
+    width: 100%; height: 5%;
+    display: flex;
+    align-self: flex-end;
+    justify-content: center;
+    background-image: linear-gradient(to top, #ECB159 1%, white);
+}
+#footer-credits{
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+}
+#footer-credits div{
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+#footer-credits a{
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+#footer-credits a:hover{
+    bottom: 2px;
+    background-image: url('../images/github-icon-hover.png');
+    background-repeat: no-repeat;
+    background-size: 100% 50%;
+    background-position: 50% 50%;
+}
+#footer-credits a:hover *{
+    visibility: hidden;
+}
+.footer-img{
+    position: relative;
+    height: 50%;
+}

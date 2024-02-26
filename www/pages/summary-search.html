@@ -1,0 +1,118 @@
+<html>
+    <head>
+        <title>Assistente de NFe - KledsonZG</title>
+        <link rel="stylesheet" href="/style/css/index.css">
+        <link rel="stylesheet" href="/style/css/summary-search.css">
+    </head>
+    <body>
+        <header>
+            <div id="header-left-side">
+                <img id="header-image-logo" src="/style/images/logo.png" alt="mais-distribuiddora-logo" title="Página inicial" onclick="window.location.assign('/index.html')">
+            </div>
+            <div id="header-right-side">
+                <a class="header-btn" href="/summarySearch">
+                    <span>PROCURAR</span>
+                    <span>NOS</span>
+                    <span>RELATORIOS</span>
+                </a>
+                <a class="header-btn 2" href="/generateSummary" style="--btn-icon: url('/style/images/column-chart-icon.png');">
+                    <span>GERAR</span>
+                    <span>RELATORIO</span>
+                </a>
+            </div>
+        </header>
+        <div id="main">
+            <div id="main-title">
+                <h1>PROCURAR NOS RELATORIOS</h1>
+            </div>
+            <div id="main-subtitle">
+                <h2>NOTA FISCAL:</h2>
+                <div class="input-row">
+                    <div class="column-info">
+                        <input type="checkbox" class="checkbox" id="checkbox-nfe-weight">
+                        <b>Peso:</b>
+                    </div>
+                    <div class="column-input">
+                        <input type="number" name="nfe-weight" id="input-nfe-weight">
+                    </div>            
+                </div>
+                <div class="input-row">
+                    <div class="column-info">
+                        <input type="checkbox" class="checkbox" id="checkbox-nfe-value">
+                        <b>Valor:</b>
+                    </div>
+                    <div class="column-input">
+                        <input type="number" name="nfe-value" id="input-nfe-value">
+                    </div>            
+                </div>
+                <div class="input-row">
+                    <div class="column-info">
+                        <input type="checkbox" class="checkbox" id="checkbox-nfe-client">
+                        <b>Cliente:</b>
+                    </div>
+                    <div class="column-input">
+                        <input type="text" name="nfe-client" id="input-nfe-client">
+                    </div>            
+                </div>
+                <div class="input-row">
+                    <div class="column-info">
+                        <input type="checkbox" class="checkbox" id="checkbox-nfe-city">
+                        <b>Cidade:</b>
+                    </div>
+                    <div class="column-input">
+                        <input type="text" name="nfe-city" id="input-nfe-city">
+                    </div>           
+                </div>
+                <div class="input-row">
+                    <div class="column-info">
+                        <input type="checkbox" class="checkbox" id="checkbox-nfe-volumes">
+                        <b>Volumes:</b>
+                    </div>
+                    <div class="column-input">
+                        <input type="number" name="nfe-volumes" id="input-nfe-volumes">
+                    </div>            
+                </div>  
+                <div class="input-row">
+                    <div class="column-info">
+                        <input type="checkbox" class="checkbox" id="checkbox-nfe-number">
+                        <b>Numero NFe:</b>
+                    </div>
+                    <div class="column-input">
+                        <input type="number" name="nfe-number" id="input-nfe-number">
+                    </div>            
+                </div>
+                <div class="input-row">
+                    <div class="column-info">
+                        <input type="checkbox" class="checkbox" id="checkbox-nfe-shipping-company">
+                        <b>Transportadora:</b>
+                    </div>
+                    <div class="column-input">
+                        <input type="text" name="nfe-shipping-company" id="input-nfe-shipping-company">
+                    </div>            
+                </div>
+                <div class="input-row">
+                    <div class="column-info">
+                        <input type="checkbox" class="checkbox" id="checkbox-nfe-date">
+                        <b>Data de emissao:</b>
+                    </div>
+                    <div class="column-input">
+                        <input type="date" name="nfe-date" id="input-nfe-date">
+                    </div>            
+                </div>
+                <div class="input-row btn-row">
+                    <button id="btn-search">PESQUISAR</button>
+                    <button id="btn-reset">RESETAR</button>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <div id="footer-credits">
+                <div><span>Desenvolvido por <b>KledsonZG</b></span></div>   
+                <a href="https://github.com/kledsonzg">
+                    <img class="footer-img" src="/style/images/github-icon.png" alt="KledsonZG's Github Profile" title="GitHub: KledsonZG">
+                </a>
+            </div>       
+        </footer>
+        <script src="/scripts/summary-search.js"></script>
+    </body>
+</html>
