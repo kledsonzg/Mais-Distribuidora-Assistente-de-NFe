@@ -11,19 +11,26 @@ namespace NFeAssistant.ExcelBase
             var summaryFolders = Program.Config.Properties.App.SummaryPath;
             var searchContent = JSON.JsonConvert.DeserializeObject<ISearchJSONBody>(jsonContent);
             
-            Console.WriteLine($"peso:{searchContent.ToSearch.Weight},valor:{searchContent.ToSearch.Value},cliente:{searchContent.ToSearch.Client},cidade:{searchContent.ToSearch.City},volumes:{searchContent.ToSearch.Volumes},nfe:{searchContent.ToSearch.NfeNumber},transportadora:{searchContent.ToSearch.ShippingCompany},data:{searchContent.ToSearch.Date}");
+            Console.WriteLine($"peso:{searchContent.ToSearch.Weight.Value},valor:{searchContent.ToSearch.Value.Value},cliente:{searchContent.ToSearch.Client.Value},cidade:{searchContent.ToSearch.City.Value},volumes:{searchContent.ToSearch.Volumes.Value},nfe:{searchContent.ToSearch.NfeNumber.Value},transportadora:{searchContent.ToSearch.ShippingCompany.Value},data:{searchContent.ToSearch.Date.Value}");
 
-            int workersCount = 0;
             List<ISearchResult> results = new();
+            List<Thread> threadsList = new();
             foreach(var folder in summaryFolders)
             {
-                var workerThread = new Thread(new ThreadStart(delegate { results.AddRange(SearchInSummaries(folder, searchContent.ToSearch) ); workersCount--; } ) );
-                workersCount++;
+                var workerThread = new Thread(new ThreadStart(delegate 
+                { 
+                    var resultArray = SearchInSummaries(folder, searchContent.ToSearch);
+                    lock(results)
+                    {
+                        results.AddRange(resultArray);
+                    }
+                } ) );
+                
+                threadsList.Add(workerThread);
                 workerThread.Start();
             }
 
-            while(workersCount > 0)
-                Thread.Sleep(1000);
+            threadsList.ForEach(thread => thread.Join() );
             Program.PrintLine("results count: " + results.Count);
 
             return JSON.JsonConvert.SerializeObject(results, JSON.Formatting.Indented);
@@ -37,30 +44,40 @@ namespace NFeAssistant.ExcelBase
             DirectoryInfo folderInfo = new DirectoryInfo(folder);
 
             var date = searchContent.GetDateTime();
+            var invalidDate = new DateTime(1, 1, 1);
+            
             directoriesToRead.Add(folderInfo);
+            directoriesToRead.AddRange(folderInfo.GetDirectories("*", SearchOption.AllDirectories) );
 
-            for(int i = 0; i < directoriesToRead.Count; i++)
-            {
-                var pathInfo = directoriesToRead[i];
-                foreach(var subdirectory in pathInfo.GetDirectories() )
-                {
-                    directoriesToRead.Add(subdirectory);
-                }
-            }
-
-            string[] supportedFiles = [".xls", ".xlsx"];
+            string[] supportedFiles = new string[] {".xls", ".xlsx"};
             foreach(var directory in directoriesToRead)
             {
-                foreach(var file in directory.GetFiles() )
+                foreach(var file in directory.GetFiles("*", SearchOption.AllDirectories) )
                 {             
-                    Program.PrintLine(file.FullName);
-                    if(file.CreationTime < date || !supportedFiles.Contains(file.Extension.ToLower() ) )
+                    var creationTime = file.CreationTime > file.LastWriteTime ? file.LastWriteTime : file.CreationTime;
+                    if(searchContent.SummaryDateFilter.FromDate != invalidDate)
+                    {
+                        if( !(creationTime >= searchContent.SummaryDateFilter.FromDate) )
+                            continue;
+                    }
+                    if(searchContent.SummaryDateFilter.ToDate != invalidDate)
+                    {
+                        if( !(creationTime < searchContent.SummaryDateFilter.ToDate.AddDays(1f)) )
+                            continue;
+                    }
+                    
+                    if(creationTime < date || !supportedFiles.Contains(file.Extension.ToLower() ) || files.Any(f => f.FullName == file.FullName) )
+                        continue;
+                    // Arquivo gerado pelo excel temporariamente como uma forma de backup (Acredito eu)
+                    if(file.Name.IndexOf("~$") == 0)
                         continue;
 
                     files.Add(file);
                 }
             }
          
+            var threadsList = new List<Thread>();
+
             int threadsCount = 0;
             foreach(var file in files)
             {
@@ -69,12 +86,29 @@ namespace NFeAssistant.ExcelBase
                     List<SearchResult> results = new();
                     try
                     {
-                        var reader = Reader.GetExcelReader(file.FullName);
+                        var reader = ExcelFile.Read(file.FullName);
 
-                        if(reader.GetTitle().ToLower().Contains(searchContent.ShippingCompany.ToLower() ) == false)
+                        if(reader == null || reader.ContainsValidSheet() == false)
                         {
-                            threadsCount--;
+                            Logger.Logger.Write($"O arquivo '{file.FullName}' foi pulado pois não foi encontrado uma planilha válida.");
                             return;
+                        }
+
+                        if(searchContent.ShippingCompany.Precise)
+                        {
+                            if(searchContent.ShippingCompany.Value.ToLower().Contains(reader.Title.ToLower() ) )
+                            {
+                                Logger.Logger.Write($"Não foi encontrado planilhas com a transportadora procurada. Arquivo: '{file.FullName}' | Transportadora procurada: '{searchContent.ShippingCompany.Value}' | Titulo: {reader.Title}");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if(reader.Title.ToLower().Contains(searchContent.ShippingCompany.Value.ToLower() ) == false)
+                            {
+                                Logger.Logger.Write($"Não foi encontrado planilhas com a transportadora procurada. Arquivo: '{file.FullName}' | Transportadora procurada: '{searchContent.ShippingCompany.Value}' | Titulo: {reader.Title}");
+                                return;
+                            }
                         }
 
                         var dates = reader.GetDates().ToList();
@@ -86,47 +120,103 @@ namespace NFeAssistant.ExcelBase
                         var volumes = reader.GetVolumes().ToList();
 
                         foreach(var result in dates)
-                        {
-                            if(result.Content.Contains(searchContent.Date) )
+                        {                    
+                            if(searchContent.Date.Precise)
+                            {
+                                if(searchContent.Date.Value.Contains(result.Content) )
+                                    results.Add(result);
+                                
+                                continue;
+                            }
+
+                            if(result.Content.Contains(searchContent.Date.Value) )
                                 results.Add(result);
                         }
                         foreach(var result in numbers)
                         {
-                            if(result.Content.Contains(searchContent.NfeNumber) )
+                            if(searchContent.NfeNumber.Precise)
+                            {
+                                if(searchContent.NfeNumber.Value.Contains(result.Content) )
+                                    results.Add(result);
+                                
+                                continue;
+                            }
+
+                            if(result.Content.Contains(searchContent.NfeNumber.Value) )
                                 results.Add(result);
                         }
                         foreach(var result in weights)
                         {
-                            if(result.Content.Contains(searchContent.Weight) )
+                            if(searchContent.Weight.Precise)
+                            {
+                                if(searchContent.Weight.Value.Contains(result.Content) )
+                                    results.Add(result);
+                                
+                                continue;
+                            }
+
+                            if(result.Content.Contains(searchContent.Weight.Value) )
                                 results.Add(result);
                         }
                         foreach(var result in clients)
                         {
-                            if(result.Content.ToLower().Contains(searchContent.Client.ToLower() ) )
+                            if(searchContent.Client.Precise)
+                            {
+                                if(searchContent.Client.Value.ToLower().Contains(result.Content.ToLower() ) )
+                                    results.Add(result);
+                                
+                                continue;
+                            }
+
+                            if(result.Content.ToLower().Contains(searchContent.Client.Value.ToLower() ) )
                                 results.Add(result);
                         }
                         foreach(var result in cities)
                         {
-                            if(result.Content.ToLower().Contains(searchContent.City.ToLower() ) )
+                            if(searchContent.City.Precise)
+                            {
+                                if(searchContent.City.Value.ToLower().Contains(result.Content.ToLower() ) )
+                                    results.Add(result);
+                                
+                                continue;
+                            }
+
+                            if(result.Content.ToLower().Contains(searchContent.City.Value.ToLower() ) )
                                 results.Add(result);
                         }
                         foreach(var result in values)
                         {
-                            if(result.Content.Contains(searchContent.Value) )
+                            if(searchContent.Value.Precise)
+                            {
+                                if(searchContent.Value.Value.Contains(result.Content) )
+                                    results.Add(result);
+                                
+                                continue;
+                            }
+
+                            if(result.Content.Contains(searchContent.Value.Value) )
                                 results.Add(result);
                         }
                         foreach(var result in volumes)
                         {
-                            if(result.Content.Contains(searchContent.Volumes) )
+                            if(searchContent.Volumes.Precise)
+                            {
+                                if(searchContent.Volumes.Value.Contains(result.Content) )
+                                    results.Add(result);
+                                
+                                continue;
+                            }
+
+                            if(result.Content.Contains(searchContent.Volumes.Value) )
                                 results.Add(result);
                         }
 
                         // Validar se os resultados estão na mesma linha.
-                        var validationDictionary = new Dictionary<int, int>();
+                        var validationDictionary = new Dictionary<int, int>();                      
                         
                         foreach(var result in results)
                         {
-                            int rowIndex = Reader.GetCellRow(result.CellAddress);
+                            int rowIndex = ExcelFile.GetRowFromCellAddress(result.CellAddress);
                             if(!validationDictionary.ContainsKey(rowIndex) )
                                 validationDictionary.Add(rowIndex, 0);
                             
@@ -135,24 +225,28 @@ namespace NFeAssistant.ExcelBase
                             // Significa que uma linha possui todos os requisitos da pesquisa.
                             if(validationDictionary[rowIndex] >= 7)
                             {
-                                validResults.Add(new ISearchResult{ RowIndex = rowIndex, FilePath = file.FullName } );
+                                lock(validResults)
+                                {
+                                    validResults.Add(new ISearchResult{ RowIndex = rowIndex, FilePath = file.FullName, Content = reader.GetRowContent(rowIndex - 1) } );
+                                }                          
                             }
                         }
                     }
                     catch(Exception exception)
                     {
-                        Program.PrintLine($"Houve um erro durante a leitura do arquivo: {file.FullName} | Motivo: {exception.Message} | Detalhes: {exception.StackTrace}");
+                        Logger.Logger.Write($"Houve um erro durante a leitura do arquivo: {file.FullName} | Motivo: {exception.Message} | Detalhes: {exception.StackTrace}");
                     }
 
-                    threadsCount--;
                 } ) );
 
+                threadsList.Add(workerThread);
                 threadsCount++;
-                workerThread.Start();
-            }                       
 
-            while(threadsCount != 0)
-                Thread.Sleep(1000);
+                workerThread.Start();
+            }
+            Program.PrintLine($"TOTAL THREADS: {threadsList.Count} | TOTAL DE ARQUIVOS: {files.Count}.");                 
+
+            threadsList.ForEach(thread => thread.Join() );
             
             return validResults.ToArray();
         }
