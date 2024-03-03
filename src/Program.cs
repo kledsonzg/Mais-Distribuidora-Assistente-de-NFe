@@ -10,13 +10,18 @@ namespace NFeAssistant.Main
         internal static Configuration Config = new ();
         private static void Main()
         {
+            Console.WriteLine("Assistente de NFe por KledsonZG");
+
             Test.Run();
             Run();
+
             Config.Save();
         }
 
         private static void Run()
         {
+            PrintLine("Em execução!");
+            Logger.Logger.Start();
             Server.Start();
         }
 
