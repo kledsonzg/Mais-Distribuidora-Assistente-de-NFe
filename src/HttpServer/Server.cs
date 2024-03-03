@@ -39,13 +39,13 @@ namespace NFeAssistant.HttpServer
 
             if(url == null)
             {
-                RespondRequest(response, HttpStatusCode.NotFound, [] );
+                RespondRequest(response, HttpStatusCode.NotFound, Array.Empty<byte>() );
                 return;
             }
             
             Console.WriteLine(request.Url.LocalPath);
             Console.WriteLine(request.Url.AbsolutePath);
-            Console.WriteLine(request.Url.AbsoluteUri);
+            //Console.WriteLine(request.Url.AbsoluteUri);
 
             switch(url.LocalPath)
             {
@@ -63,7 +63,7 @@ namespace NFeAssistant.HttpServer
                 {
                     if(request.HttpMethod.ToUpper() != "POST")
                     {
-                        RespondRequest(response, HttpStatusCode.BadRequest, [] );
+                        RespondRequest(response, HttpStatusCode.BadRequest, Array.Empty<byte>() );
                         return;
                     }
 
@@ -77,7 +77,7 @@ namespace NFeAssistant.HttpServer
                     var result = FileServer.GetBytesFromFile(url.LocalPath, false);
                     if(result == null)
                     {
-                        RespondRequest(response, HttpStatusCode.NotFound, [] );
+                        RespondRequest(response, HttpStatusCode.NotFound, Array.Empty<byte>() );
                         return;
                     }
 

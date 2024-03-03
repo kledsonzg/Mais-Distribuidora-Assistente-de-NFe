@@ -11,8 +11,8 @@ namespace NFeAssistant.Interface
 
         internal IAppConfig()
         {
-            XmlPath = [];
-            SummaryPath = [];
+            XmlPath = Array.Empty<string>();
+            SummaryPath = Array.Empty<string>();
         }
     }
 }

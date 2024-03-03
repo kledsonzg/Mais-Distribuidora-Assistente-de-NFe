@@ -10,8 +10,8 @@ namespace NFeAssistant.Interface
         internal string[] Delimiter { get; set; }
         internal IRulesConfig()
         {
-            Names = [];
-            Delimiter = [];
+            Names = Array.Empty<string>();
+            Delimiter = Array.Empty<string>();
         }
     }
 }

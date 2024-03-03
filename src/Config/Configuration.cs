@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using NFeAssistant.Interface;
+using NFeAssistant.Main;
 using JSON = Newtonsoft.Json;
 
 namespace NFeAssistant.Config
@@ -14,13 +15,13 @@ namespace NFeAssistant.Config
             var exePath = Environment.ProcessPath;
             if(exePath == null)
             {
-                throw new ConfigFileException(["Arquivo de configuração não encontrado. Entre em contato com o desenvolvedor para tentar encontrar uma solução."]);
+                throw new ConfigFileException(new string[] {"Arquivo de configuração não encontrado. Entre em contato com o desenvolvedor para tentar encontrar uma solução."} );
             }
 
             var folder = Directory.GetParent(exePath);
             if(folder == null)
             {
-                throw new ConfigFileException(["Erro ao obter a pasta raíz do programa. Entre em contato com o desenvolvedor para tentar encontrar uma solução."]);
+                throw new ConfigFileException(new string[] {"Erro ao obter a pasta raíz do programa. Entre em contato com o desenvolvedor para tentar encontrar uma solução."} );
             }
 
             var configPathInfo = Directory.CreateDirectory($"{folder}/config");
@@ -48,7 +49,9 @@ namespace NFeAssistant.Config
         internal void Save(string filePath, IConfig configuration)
         {
             var json = JSON.JsonConvert.SerializeObject(configuration, JSON.Formatting.Indented);
+            Program.PrintLine("Salvando configurações...");
             File.WriteAllText(filePath, json);
+            Program.PrintLine("Configurações salvas com sucesso!");
         }
 
         private void CreateConfigFile(string filePath)
