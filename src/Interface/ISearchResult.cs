@@ -9,11 +9,14 @@ namespace NFeAssistant.Interface
         internal int RowIndex { get; set; }
         [JsonProperty]
         internal string FilePath { get; set; }
+        [JsonProperty]
+        internal string Content { get; set; }
 
         internal ISearchResult()
         {
             RowIndex = 0;
             FilePath = "";
+            Content = "";
         }
     }
 }
