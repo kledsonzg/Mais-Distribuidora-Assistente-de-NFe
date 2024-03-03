@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Assistente de NFe - KledsonZG</title>
+        <meta charset="utf-8" />
         <link rel="stylesheet" href="/style/css/index.css">
         <link rel="stylesheet" href="/style/css/summary-search.css">
     </head>
@@ -101,7 +102,46 @@
                 </div>
                 <div class="input-row btn-row">
                     <button id="btn-search">PESQUISAR</button>
+                    <button id="btn-advanced">AVAN&Ccedil;ADO</button>
                     <button id="btn-reset">RESETAR</button>
+                </div>
+                <div class="input-row advanced-control-row hidden">
+                    <div class="column-advanced-control">
+                        <b>De:</b>
+                        <input type="date" name="limit-from-date" id="limit-from-date">
+                    </div>
+                    <div class="column-advanced-control">
+                        <b>Precis&atilde;o em Peso:</b>
+                        <input type="checkbox" class="checkbox-precise" id="checkbox-precision-weight">
+                    </div>
+                    <div class="column-advanced-control">
+                        <b>Precis&atilde;o em Valor:</b>
+                        <input type="checkbox" class="checkbox-precise" id="checkbox-precision-value">
+                    </div>
+                    <div class="column-advanced-control">
+                        <b>Precis&atilde;o em Cliente:</b>
+                        <input type="checkbox" class="checkbox-precise" id="checkbox-precision-client">
+                    </div>
+                    <div class="column-advanced-control">
+                        <b>Precis&atilde;o em Cidade:</b>
+                        <input type="checkbox" class="checkbox-precise" id="checkbox-precision-city">
+                    </div>
+                    <div class="column-advanced-control">
+                        <b>Precis&atilde;o em Volumes:</b>
+                        <input type="checkbox" class="checkbox-precise" id="checkbox-precision-volumes">
+                    </div>
+                    <div class="column-advanced-control">
+                        <b>Precis&atilde;o em N&uacute;mero NFe:</b>
+                        <input type="checkbox" class="checkbox-precise" id="checkbox-precision-nfe-number">
+                    </div>
+                    <div class="column-advanced-control">
+                        <b>Precis&atilde;o em Transportadora:</b>
+                        <input type="checkbox" class="checkbox-precise" id="checkbox-precision-shipping-company">
+                    </div>
+                    <div class="column-advanced-control">
+                        <b>At&eacute;:</b>
+                        <input type="date" name="limit-to-date" id="limit-to-date">
+                    </div>
                 </div>
             </div>
         </div>
