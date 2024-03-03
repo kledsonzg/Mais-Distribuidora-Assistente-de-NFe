@@ -6,37 +6,40 @@ namespace NFeAssistant.Interface
     internal class ISearchRequestContent
     {
         [JsonProperty]
-        internal string Date { get; set; }
+        internal ISearchFilter Date { get; set; }
         [JsonProperty]
-        internal string NfeNumber { get; set; }
+        internal ISearchFilter NfeNumber { get; set; }
         [JsonProperty]
-        internal string Client { get; set; }
+        internal ISearchFilter Client { get; set; }
         [JsonProperty]
-        internal string City { get; set; }
+        internal ISearchFilter City { get; set; }
         [JsonProperty]
-        internal string Volumes { get; set; }
+        internal ISearchFilter Volumes { get; set; }
         [JsonProperty]
-        internal string Weight { get; set; }
+        internal ISearchFilter Weight { get; set; }
         [JsonProperty]
-        internal string Value { get; set; }
+        internal ISearchFilter Value { get; set; }
         [JsonProperty]
-        internal string ShippingCompany { get; set; }
+        internal ISearchFilter ShippingCompany { get; set; }
+        [JsonProperty]
+        internal ISummaryDateFilter SummaryDateFilter { get; set; }
 
         internal ISearchRequestContent()
         {
-            Date = "";
-            NfeNumber = "";
-            Client = "";
-            City = "";
-            Volumes = "";
-            Weight = "";
-            Value = "";
-            ShippingCompany = "";
+            Date = new();
+            NfeNumber = new();
+            Client = new();
+            City = new();
+            Volumes = new();
+            Weight = new();
+            Value = new();
+            ShippingCompany = new();
+            SummaryDateFilter = new();
         }
 
         internal DateTime GetDateTime()
         {
-            return Functions.GetDateTimeFromString(Date);
+            return Functions.GetDateTimeFromString(Date.Value);
         }
     }
 }
