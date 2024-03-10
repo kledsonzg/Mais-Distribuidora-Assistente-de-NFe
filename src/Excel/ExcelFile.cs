@@ -6,6 +6,7 @@ using NPOI.XSSF.UserModel;
 using NPOI.SS.Util;
 using NPOI.HSSF.UserModel;
 using System.Text;
+using NFeAssistant.Definitions.Excel;
 
 namespace NFeAssistant.ExcelBase
 {
@@ -179,7 +180,7 @@ namespace NFeAssistant.ExcelBase
             return int.Parse(rowStr.Length > 0 ? rowStr : "-1");
         }
         
-        internal SearchResult[] GetTableListByRules(IRulesConfig rules)
+        internal SearchResult[] GetTableListByRules(IRulesConfig rules, ColumnType columnType)
         {
             var sheet = GetSummarySheet();
             var list = new List<SearchResult>();
@@ -268,9 +269,11 @@ namespace NFeAssistant.ExcelBase
                     break;
                 
                 list.Add(new SearchResult{
+                    SheetName = sheet.SheetName,
                     CellAddress = sheet.GetRow(row).GetCell(column).Address.FormatAsString(),
                     Content = value ?? "",
-                    FilePath = FilePath
+                    FilePath = FilePath,
+                    Type = columnType
                 } );
             }
 
@@ -280,43 +283,43 @@ namespace NFeAssistant.ExcelBase
         internal SearchResult[] GetDates()
         {
             var rules = Program.Config.Properties.Summary.TableNameRules.Date;
-            return GetTableListByRules(rules);
+            return GetTableListByRules(rules, ColumnType.COLUMN_NFE_DATE);
         }
 
         internal SearchResult[] GetFiscalNumbers()
         {
             var rules = Program.Config.Properties.Summary.TableNameRules.NF;
-            return GetTableListByRules(rules);
+            return GetTableListByRules(rules, ColumnType.COLUMN_NFE_NUMBER);
         }
 
         internal SearchResult[] GetCities()
         {
             var rules = Program.Config.Properties.Summary.TableNameRules.City;
-            return GetTableListByRules(rules);
+            return GetTableListByRules(rules, ColumnType.COLUMN_NFE_CITY);
         }
 
         internal SearchResult[] GetClients()
         {
             var rules = Program.Config.Properties.Summary.TableNameRules.Client;
-            return GetTableListByRules(rules);
+            return GetTableListByRules(rules, ColumnType.COLUMN_NFE_CLIENT);
         }
 
         internal SearchResult[] GetWeights()
         {
             var rules = Program.Config.Properties.Summary.TableNameRules.Weight;
-            return GetTableListByRules(rules);
+            return GetTableListByRules(rules, ColumnType.COLUMN_NFE_WEIGHT);
         }
 
         internal SearchResult[] GetVolumes()
         {
             var rules = Program.Config.Properties.Summary.TableNameRules.Volumes;
-            return GetTableListByRules(rules);
+            return GetTableListByRules(rules, ColumnType.COLUMN_NFE_VOLUME);
         }
 
         internal SearchResult[] GetValues()
         {
             var rules = Program.Config.Properties.Summary.TableNameRules.Value;
-            return GetTableListByRules(rules);
+            return GetTableListByRules(rules, ColumnType.COLUMN_NFE_VALUE);
         }
 
         internal bool ContainsValidSheet()

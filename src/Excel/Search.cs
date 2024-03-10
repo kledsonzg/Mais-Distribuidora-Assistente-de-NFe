@@ -225,9 +225,23 @@ namespace NFeAssistant.ExcelBase
                             // Significa que uma linha possui todos os requisitos da pesquisa.
                             if(validationDictionary[rowIndex] >= 7)
                             {
+                                var resultsFromRow = results.Where(predicate => ExcelFile.GetRowFromCellAddress(predicate.CellAddress) == rowIndex).ToList();
+
+                                var date = resultsFromRow.Find(predicate => predicate.Type == Definitions.Excel.ColumnType.COLUMN_NFE_DATE);
+                                var number = resultsFromRow.Find(predicate => predicate.Type == Definitions.Excel.ColumnType.COLUMN_NFE_NUMBER);
+                                var client = resultsFromRow.Find(predicate => predicate.Type == Definitions.Excel.ColumnType.COLUMN_NFE_CLIENT);
+                                var city = resultsFromRow.Find(predicate => predicate.Type == Definitions.Excel.ColumnType.COLUMN_NFE_CITY);
+                                var volume = resultsFromRow.Find(predicate => predicate.Type == Definitions.Excel.ColumnType.COLUMN_NFE_VOLUME);
+                                var weight = resultsFromRow.Find(predicate => predicate.Type == Definitions.Excel.ColumnType.COLUMN_NFE_WEIGHT);
+                                var value = resultsFromRow.Find(predicate => predicate.Type == Definitions.Excel.ColumnType.COLUMN_NFE_VALUE);
+
+                                if(date == null || number == null || client == null || city == null || volume == null || weight == null || value == null)
+                                    continue;
+                                
+                                string content = $"{date.Content}\t{number.Content}\t{client.Content}\t{city.Content}\t{volume.Content}\t{weight.Content}\t{value.Content}";
                                 lock(validResults)
                                 {
-                                    validResults.Add(new ISearchResult{ RowIndex = rowIndex, FilePath = file.FullName, Content = reader.GetRowContent(rowIndex - 1) } );
+                                    validResults.Add(new ISearchResult{ RowIndex = rowIndex, FilePath = file.FullName, Content = content, SheetName = date.SheetName } );
                                 }                          
                             }
                         }

@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using NFeAssistant.ExcelBase;
 
 namespace NFeAssistant.Interface
 {
@@ -11,12 +10,15 @@ namespace NFeAssistant.Interface
         internal string FilePath { get; set; }
         [JsonProperty]
         internal string Content { get; set; }
+        [JsonProperty]
+        internal string SheetName { get; set; }
 
         internal ISearchResult()
         {
             RowIndex = 0;
             FilePath = "";
             Content = "";
+            SheetName = "";
         }
     }
 }
