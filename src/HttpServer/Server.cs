@@ -59,6 +59,15 @@ namespace NFeAssistant.HttpServer
                     RespondRequest(response, HttpStatusCode.OK, FileServer.GetBytesFromFile("pages/summary-search.html", true) );
                     return;
                 }
+                case "/summaryOpen":
+                {
+                    bool success = Viewer.View(request.InputStream, response);
+                    if(success)
+                        RespondRequest(response, HttpStatusCode.OK, Array.Empty<byte>() );
+                    else RespondRequest(response, HttpStatusCode.NotFound, Array.Empty<byte>() );
+                    
+                    return;
+                }
                 case "/search":
                 {
                     if(request.HttpMethod.ToUpper() != "POST")
