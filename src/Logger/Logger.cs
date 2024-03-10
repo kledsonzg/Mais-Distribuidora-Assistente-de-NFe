@@ -93,7 +93,7 @@ namespace NFeAssistant.Logger
 
                     if(dataAppended)
                     {
-                        Program.PrintLine("Salvando dados...");
+                        Program.PrintLine("Salvando log...");
                         lock(stream)
                         {
                             var file = stream.Name;
