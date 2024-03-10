@@ -1,23 +1,27 @@
+using System.ComponentModel;
 using System.Xml;
 using NFeAssistant.Invoice;
 using NFeAssistant.Main;
+using NFeAssistant.Util;
 using NPOI.Util;
 
 namespace NFeAssistant.Xml
 {
     internal class Invoice
     {
-        internal string FilePath { get; }
-        internal bool NoFails { get { return AllRight; } }
         private XmlDocument Document { get; }
 
         internal Client Client;
         internal ShippingCompany ShippingCompany;
         internal InvoiceValue Value;
         internal List<Product> Products;
+        internal DateTime Emission;
+        internal DateTime Shipment;
+        internal string FilePath { get; }   
         internal string NumberCode;
         internal float Weight;
         internal float Volumes;
+        internal bool NoFails { get { return AllRight; } }
         private bool AllRight;
 
 
@@ -62,7 +66,7 @@ namespace NFeAssistant.Xml
             if(aboutInvoiceElement == null || clientElement == null || valuesElement == null || shippingCompanyElement == null || shippingInfoElement == null)
                 return;                 
             
-            if(!SetClient(clientElement) || !SetShippingCompany(shippingCompanyElement) || !SetInvoiceValues(valuesElement) || !SetInvoiceNumber(aboutInvoiceElement) || !SetVolumetry(shippingInfoElement) )
+            if(!SetClient(clientElement) || !SetShippingCompany(shippingCompanyElement) || !SetInvoiceValues(valuesElement) || !SetInvoiceInfo(aboutInvoiceElement) || !SetVolumetry(shippingInfoElement) )
                 return;
             
             SetProdutsList(productsElements);
@@ -84,14 +88,19 @@ namespace NFeAssistant.Xml
             return true;
         }
 
-        private bool SetInvoiceNumber(XmlNode aboutInvoiceElement)
+        private bool SetInvoiceInfo(XmlNode aboutInvoiceElement)
         {
             var invoiceNumberElement = aboutInvoiceElement.SelectSingleNode(".//nNF");
-            if(invoiceNumberElement == null)
+            var emissionDateElement = aboutInvoiceElement.SelectSingleNode(".//dhEmi");
+            var shipmentDateElement = aboutInvoiceElement.SelectSingleNode(".//dhSaiEnt");
+            if(invoiceNumberElement == null || emissionDateElement == null || shipmentDateElement == null)
                 return false;
             
             NumberCode = invoiceNumberElement.InnerText;
-            
+            string emissionString = emissionDateElement.InnerText;
+            string shipmentString = shipmentDateElement.InnerText;
+            Emission = Functions.GetDateTimeFromString($"{emissionString.Substring(8, 2)}/{emissionString.Substring(5, 2)}/{emissionString[..4]}");
+            Shipment = Functions.GetDateTimeFromString($"{shipmentString.Substring(8, 2)}/{shipmentString.Substring(5, 2)}/{shipmentString[..4]}");
             return true;
         }
 
@@ -203,7 +212,7 @@ namespace NFeAssistant.Xml
                     if(productCodeElement == null || productNameElement == null || productQuantityElement == null || productValueElement == null)
                         continue;
                     
-                    string name = productNameElement.InnerText.Replace('.', ',');
+                    string name = productNameElement.InnerText;
                     int code = -1;
                     float quantity = 0f, value = 0f;
                     int.TryParse(productCodeElement.InnerText, out code);
