@@ -1,5 +1,6 @@
 using NFeAssistant.ExcelBase;
 using NFeAssistant.Main;
+using NFeAssistant.Xml;
 using NPOI.HSSF.UserModel;
 
 namespace NFeAssistant.Testing
@@ -29,6 +30,15 @@ namespace NFeAssistant.Testing
             // {
             //     Program.PrintLine($"FORMATO: {format} : {HSSFDataFormat.GetBuiltinFormat(format) }");
             // }
+            //var invoice = NFeAssistant.Xml.Invoice.GetFromXMLFile(@"F:\Users\kleds\Downloads\youtube playlists\TERMINEI COM A EX - Mc Rick Mc Leozin Dj Caio Vieira (udio Oficial) - YouTube\Para análise - Relatorios e NF\31240211122552000199550010000923931000678487.xml");
+            //Program.PrintLine($"Invoice: {invoice.FilePath}\n\t{invoice.Client.Nome}, {invoice.Client.Cidade}\n\t{invoice.ShippingCompany.Nome}\n\t{invoice.NumberCode}, {invoice.Volumes}, {invoice.Weight}, {invoice.Value.Total}\n\tTudo certo? {invoice.NoFails}");
+            //Program.PrintLine($"Invoice: {invoice.FilePath}");
+            //Program.PrintLine($"Invoice: {invoice.Client.Nome}");
+            //Program.PrintLine($"Quantidade de produtos: {invoice.Products.Count}");
+            //foreach(var product in invoice.Products)
+            //{
+            //    Program.PrintLine($"Produto: {product.Code} - {product.Name} - {product.Quantity} - {product.Value}");
+            //}
             Program.PrintLine("Fim dos testes.");
         }
     }
