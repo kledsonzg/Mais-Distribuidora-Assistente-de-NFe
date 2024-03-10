@@ -30,7 +30,7 @@ namespace NFeAssistant.Testing
             // {
             //     Program.PrintLine($"FORMATO: {format} : {HSSFDataFormat.GetBuiltinFormat(format) }");
             // }
-            //var invoice = NFeAssistant.Xml.Invoice.GetFromXMLFile(@"F:\Users\kleds\Downloads\youtube playlists\TERMINEI COM A EX - Mc Rick Mc Leozin Dj Caio Vieira (udio Oficial) - YouTube\Para análise - Relatorios e NF\31240211122552000199550010000923931000678487.xml");
+            //var invoice = NFeAssistant.Xml.Invoice.GetFromXMLFile(@"ocultado\Para análise - Relatorios e NF\31240211122552000199550010000923931000678487.xml");
             //Program.PrintLine($"Invoice: {invoice.FilePath}\n\t{invoice.Client.Nome}, {invoice.Client.Cidade}\n\t{invoice.ShippingCompany.Nome}\n\t{invoice.NumberCode}, {invoice.Volumes}, {invoice.Weight}, {invoice.Value.Total}\n\tTudo certo? {invoice.NoFails}");
             //Program.PrintLine($"Invoice: {invoice.FilePath}");
             //Program.PrintLine($"Invoice: {invoice.Client.Nome}");
