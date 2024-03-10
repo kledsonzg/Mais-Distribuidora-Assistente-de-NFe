@@ -109,8 +109,7 @@ searchBtn.addEventListener('click', () => {
     
     let req = new XMLHttpRequest();
     req.open('POST', `${window.location.origin}/search`);
-    req.addEventListener('load', () => {
-        console.log('uai!');
+    req.addEventListener('loadend', () => {
         searchBtn.disabled = false;
         if(req.status === 404){
             alert('NFe nao encontrada.');
@@ -119,7 +118,7 @@ searchBtn.addEventListener('click', () => {
         if(req.status !== 200)
             return;
 
-        console.log('ok!');
+        showSearchingResult(JSON.parse(req.responseText) );
     } );
     req.send(JSON.stringify(values) );
 } );

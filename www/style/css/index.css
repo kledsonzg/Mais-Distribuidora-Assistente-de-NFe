@@ -30,13 +30,15 @@ html, body{
 body{
     position: relative;
     display: flex;
+    flex-direction: column;
+    min-height: 85vh;
 }
-
 
 header{
     position: fixed;
     top: 0; left: 0;
-    width: 100%; height: 15%;
+    width: 100%; height: 15vh;
+    z-index: 10;
 
     background-image: linear-gradient(to right, #FEFBF6 20%, #ECB159);
     border-bottom: #ECB159 solid 2px;
@@ -101,10 +103,11 @@ header{
 
 footer{
     position: relative;
-    width: 100%; height: 5%;
+    height: 5%; width: 100%;
     display: flex;
     align-self: flex-end;
     justify-content: center;
+    top: 15%;
     background-image: linear-gradient(to top, #ECB159 1%, white);
 }
 #footer-credits{
