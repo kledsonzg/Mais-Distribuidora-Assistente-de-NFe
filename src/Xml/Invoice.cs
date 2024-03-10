@@ -1,9 +1,6 @@
-using System.ComponentModel;
 using System.Xml;
 using NFeAssistant.Invoice;
-using NFeAssistant.Main;
 using NFeAssistant.Util;
-using NPOI.Util;
 
 namespace NFeAssistant.Xml
 {
