@@ -175,7 +175,7 @@ namespace NFeAssistant.Xml
             Client.Estado = ufElement.InnerText;
             Client.Bairro = districtElemennt.InnerText;
             Client.CEP = cepElement.InnerText;
-            Client.EnderecoNumero = int.Parse(numberElement.InnerText);
+            Client.EnderecoNumero = numberElement.InnerText;
             
             return true;
         }

@@ -17,6 +17,7 @@ namespace NFeAssistant.ExcelBase
         internal HSSFWorkbook HSSWorkBook;
         internal bool IsOLE2Format;
         string FilePath = "";
+        private Stream FileStream;
 
         private ExcelFile() {}
         private ExcelFile(string filePath)
@@ -29,15 +30,36 @@ namespace NFeAssistant.ExcelBase
             if(isOLE2)
             {
                 IsOLE2Format = true;
-                HSSWorkBook = new HSSFWorkbook(File.OpenRead(filePath) );            
+                using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite) )
+                {
+                    HSSWorkBook = new HSSFWorkbook(fs);
+                }            
             }
             else
             {
                 IsOLE2Format = false;
-                XSSWorkBook = new XSSFWorkbook(filePath);
+                using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite) )
+                {
+                    XSSWorkBook = new XSSFWorkbook(fs);
+                }        
             }
 
             FilePath = filePath;
+        }
+
+        internal void Save(string filePath)
+        {
+            if(IsOLE2Format)
+                using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite) )
+                {
+                    HSSWorkBook.Write(fs, false);
+                }
+            else{
+                using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite) )
+                {
+                    XSSWorkBook.Write(fs, false);
+                }
+            }
         }
 
         internal static ExcelFile? Read(string filePath)
@@ -63,7 +85,7 @@ namespace NFeAssistant.ExcelBase
                 return null;
             }
 
-            return new ExcelFile(filePath, fileExtension == supportedExcelFiles[0] ? true : false);
+            return new ExcelFile(filePath, fileExtension == supportedExcelFiles[0] );
         }
 
         internal string Title
@@ -125,13 +147,8 @@ namespace NFeAssistant.ExcelBase
             return result ?? "";
         }
 
-        internal string GetRowContent(int rowIndex)
+        internal static string GetRowContent(ISheet sheet, int rowIndex)
         {
-            var sheet = GetSummarySheet();
-
-            if(sheet == null)
-                return "";
-            
             var row = sheet.GetRow(rowIndex);
             if(row == null)
                 return "";
@@ -150,6 +167,15 @@ namespace NFeAssistant.ExcelBase
             }
 
             return result;
+        }
+        internal string GetRowContent(int rowIndex)
+        {
+            var sheet = GetSummarySheet();
+
+            if(sheet == null)
+                return "";
+
+            return GetRowContent(sheet, rowIndex);
         }
 
         internal static string GetColumnFromCellAddress(string address)
@@ -251,7 +277,7 @@ namespace NFeAssistant.ExcelBase
                 
                 string value = GetCellValue(cell);
                 
-                if(String.IsNullOrEmpty(value.Trim() ) )
+                if(string.IsNullOrEmpty(value.Trim() ) )
                 {
                     break;
                 }
@@ -327,7 +353,7 @@ namespace NFeAssistant.ExcelBase
             return (GetSummarySheet() != null);
         }
 
-        private ISheet? GetSummarySheet()
+        internal ISheet? GetSummarySheet()
         {
             if(!IsOLE2Format)
             {

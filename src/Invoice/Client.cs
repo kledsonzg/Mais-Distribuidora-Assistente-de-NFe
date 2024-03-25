@@ -10,8 +10,7 @@ namespace NFeAssistant.Invoice
         internal string CPF { get; set; }
         internal string Endereco { get; set; }
         internal string CEP { get; set; }
-
-        internal int EnderecoNumero { get; set; }
+        internal string EnderecoNumero { get; set; }
         internal Client()
         {
             Nome = "";
@@ -21,9 +20,8 @@ namespace NFeAssistant.Invoice
             CNPJ = "";
             CPF = "";
             Endereco = "";
-            CEP = "";
-            
-            EnderecoNumero = -1;
+            CEP = "";    
+            EnderecoNumero = "";
         }
     }
 }

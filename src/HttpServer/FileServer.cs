@@ -1,3 +1,6 @@
+using System.Text;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using NFeAssistant.Main;
 
 namespace NFeAssistant.HttpServer
@@ -10,7 +13,7 @@ namespace NFeAssistant.HttpServer
             Setup();
         }
 
-        internal byte[]? GetBytesFromFile(string localPath, bool returnIndexIfNotFound)
+        internal static byte[]? GetBytesFromFile(string localPath, bool returnIndexIfNotFound)
         {
             var filePath = $"{clientPath}{localPath}";
             if(!File.Exists(filePath) )
@@ -26,6 +29,21 @@ namespace NFeAssistant.HttpServer
             }
 
             return File.ReadAllBytes(filePath);
+        }
+
+        internal static byte[]? GetFolderDirectories(string path)
+        {
+            try
+            {
+                var directories = path == "0" ? Directory.GetLogicalDrives() :  Directory.GetDirectories(path);
+                var json = JsonConvert.SerializeObject(directories);
+
+                return Encoding.UTF8.GetBytes(json);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private void Setup()

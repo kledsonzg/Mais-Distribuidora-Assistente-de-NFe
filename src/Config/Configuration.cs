@@ -8,7 +8,7 @@ namespace NFeAssistant.Config
 
     internal class Configuration
     {
-        private string FilePath;
+        private readonly string FilePath;
         internal IConfig Properties;
         internal Configuration()
         {
@@ -64,6 +64,20 @@ namespace NFeAssistant.Config
         }
 
         private static IConfig CreateBlankConfigObject() => new();
+
+        internal string? GetExcelSummaryModelPath()
+        {
+            var configFolder = Directory.GetParent(FilePath);
+            if(configFolder == null)
+                return null;
+            
+            var folder = configFolder.Parent;
+            if(folder == null)
+                return null;
+            
+            var modelPath = $"{folder}/models/RELATÓRIO.xlsx";
+            return modelPath;
+        }
         
     }
 
