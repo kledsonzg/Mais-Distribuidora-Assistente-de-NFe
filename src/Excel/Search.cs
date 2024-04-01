@@ -79,8 +79,10 @@ namespace NFeAssistant.ExcelBase
             var threadsList = new List<Thread>();
 
             int threadsCount = 0;
-            foreach(var file in files)
+            for(int i = 0; i < files.Count && files.Count > 0; i++)
             {
+                var file = files[i];
+
                 var workerThread = new Thread(new ThreadStart(delegate 
                 {
                     List<SearchResult> results = new();
@@ -248,7 +250,23 @@ namespace NFeAssistant.ExcelBase
                     }
                     catch(Exception exception)
                     {
-                        Logger.Logger.Write($"Houve um erro durante a leitura do arquivo: {file.FullName} | Motivo: {exception.Message} | Detalhes: {exception.StackTrace}");
+                        bool solved = false;
+                        if(exception is IOException)
+                        {
+                            try
+                            {
+                                var tempFolder = $"{Path.GetTempPath()}/KledsonZG/Assistente de NFe";
+                                var fileDest = $"{tempFolder}/{Path.GetFileName(file.Name)}";
+                                File.Copy(file.FullName, fileDest, true);
+                                files.Add(new FileInfo(fileDest) );
+                                solved = true;
+                            }   
+                            catch{}
+                            
+                        }
+
+                        if(!solved)
+                            Logger.Logger.Write($"Houve um erro durante a leitura do arquivo: {file.FullName} | Motivo: {exception.Message} | Detalhes: {exception.StackTrace}");
                     }
 
                 } ) );
