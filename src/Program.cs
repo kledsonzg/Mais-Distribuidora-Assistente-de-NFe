@@ -1,5 +1,4 @@
-﻿using System;
-using NFeAssistant.Config;
+﻿using NFeAssistant.Config;
 using NFeAssistant.Testing;
 using NFeAssistant.HttpServer;
 
@@ -13,9 +12,23 @@ namespace NFeAssistant.Main
             Console.WriteLine("Assistente de NFe por KledsonZG");
 
             Test.Run();
-            Run();
+            try
+            {
+                Run();
+            }
+            catch(Exception e)
+            {
+                Logger.Logger.Write($"O programa foi encerrado devido a uma exceção: {e.Message} | Pilha: {e.StackTrace}");
+            }
 
-            Config.Save();
+            try
+            {
+                Config.Save();
+            }
+            catch(Exception e)
+            {
+                Logger.Logger.Write($"Ocorreu um erro durante a gravação das configurações! Verifique se houve alguma corrupção de informação.\n Mensagem da exceção: {e.Message} | Pilha: {e.StackTrace}");
+            }          
         }
 
         private static void Run()
