@@ -26,7 +26,26 @@ namespace NFeAssistant.HttpServer
                 var context = httpServer.GetContext();
 
                 var contextWorker = new Thread(new ThreadStart(delegate {
-                    OnHandleRequest(context);
+                    try
+                    {
+                        OnHandleRequest(context);
+                    }
+                    catch(Exception e)
+                    {
+                        string errorMsg = $"CAPTURA GENÉRICA DE EXCEÇÃO\nExceção lançada durante um tratamento de requisição HTTP.\nExceção: {e.Message} | Pilha: {e.StackTrace}";
+                        Program.PrintLine(errorMsg);
+                        Logger.Logger.Write(errorMsg);
+                        try
+                        {
+                            RespondRequest(context.Response, HttpStatusCode.FailedDependency, Encoding.UTF8.GetBytes(errorMsg) );
+                        }
+                        catch(Exception e2)
+                        {
+                            errorMsg = $"Erro ao tentar responder requisição HTTP após uma exceção genérica ser lançada.\nExceção: {e2.Message} | Pilha: {e2.StackTrace}";
+                            Program.PrintLine(errorMsg);
+                            Logger.Logger.Write(errorMsg);
+                        }
+                    }
                 } ) );
 
                 contextWorker.Start();
@@ -45,8 +64,8 @@ namespace NFeAssistant.HttpServer
                 return;
             }
             
-            Console.WriteLine(request.Url.LocalPath);
-            Console.WriteLine(request.Url.AbsolutePath);
+            //Console.WriteLine(request.Url.LocalPath);
+            //Console.WriteLine(request.Url.AbsolutePath);
             //Console.WriteLine(request.Url.AbsoluteUri);
 
             switch(url.LocalPath)
