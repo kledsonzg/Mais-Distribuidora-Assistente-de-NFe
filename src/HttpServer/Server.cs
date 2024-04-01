@@ -20,6 +20,7 @@ namespace NFeAssistant.HttpServer
             FileServer = new FileServer();
             httpServer.Start();
             IsOnline = true;
+            Util.Functions.StartPage("http://127.0.0.1:3344");
 
             while (IsOnline)
             {

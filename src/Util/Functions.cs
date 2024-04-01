@@ -38,5 +38,19 @@ namespace NFeAssistant.Util
 
             Process.Start(process);
         }
+
+        internal static Process? StartPage(string url)
+        {
+            if(Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute) == false)
+                return null;
+            
+            var process = new ProcessStartInfo()
+            {
+                FileName = url,
+                UseShellExecute = true
+            };
+
+            return Process.Start(process);
+        }
     }
 }
