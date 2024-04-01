@@ -1,0 +1,119 @@
+/* CSS Document */
+#summary-result{
+    position: relative;
+    top: 15%;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    font-family: Arial;
+}
+#summary-title-container{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    background-color: #ECB159;
+}
+#summary-title-container h2{
+    position: relative;
+    width: 25%;
+    display: flex;
+    justify-content: center;
+    font-family: Arial;
+    color: white;
+}
+#summary-title-container input{
+    flex: 1;
+    background-color: white;
+    font-size: 1.5rem;
+    border: #ECB159 1px solid;
+    color: black;
+}
+#summary-title-container input:focus{
+    outline: 0;
+    font-weight: bold;
+}
+#summary-title-container button{
+    font-family: Arial;
+    color: white;
+    font-weight: bold;
+    background-color: #12372A;
+    border: none;
+    transition: transform 1s;
+    width: fit-content;
+}
+#summary-title-container button:hover{
+    background-color: #416D19;
+    width: 15%;
+    cursor: pointer;
+}
+
+.summary-row{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-evenly;
+    border-bottom: #ECB159 1px solid;
+}
+.summary-row.header{
+    text-decoration: underline;
+    font-weight: bold;
+    margin-top: 10px;
+}
+.summary-column{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    text-align: center;
+    align-items: center;
+    width: 10%;
+}
+.summary-row:not(.header) .summary-column:hover:not(.btns){
+    cursor: crosshair;
+    background-color: #ECB159;
+}
+.summary-row.to-replace{
+    background-color: #22A39F60;
+}
+.summary-column textarea{
+    width: 100%;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid #ECB159;
+    font-size: 1rem;
+}
+.summary-column textarea:focus{
+    outline: 0;
+    height: 100%;
+    border: #22A39F 1px solid;
+}
+
+.summary-column.btns{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+.button-row{
+    position: relative;
+    height: 25px; width: 25px;
+    background-color: transparent;
+    border: none;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: 50% 50%;
+    cursor: pointer;
+}
+:not(.button-row-move).button-row:hover{
+    top: -2px;
+}
+.button-row-move{
+    background-image: url('../images/move-y-icon.png');  
+    cursor: row-resize;
+}
+.button-row-delete{
+    background-image: url('../images/red-trash-can-icon.png');  
+}
+.button-row-insert{
+    background-image: url('../images/addition-color-icon.png');
+}
