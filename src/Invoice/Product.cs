@@ -1,11 +1,13 @@
+using Newtonsoft.Json;
+
 namespace NFeAssistant.Invoice
 {
     internal class Product
     {
-        internal string Name { get; set; }
-        internal int Code { get; set; }
-        internal float Quantity { get; set; }
-        internal float Value { get; set; }
+        [JsonProperty] internal string Name { get; set; }
+        [JsonProperty] internal int Code { get; set; }
+        [JsonProperty] internal float Quantity { get; set; }
+        [JsonProperty] internal float Value { get; set; }
 
         internal Product()
         {

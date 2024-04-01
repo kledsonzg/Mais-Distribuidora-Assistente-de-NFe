@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace NFeAssistant.Util
 {
     internal class Functions
@@ -14,6 +16,27 @@ namespace NFeAssistant.Util
             
             var date = new DateTime(year, month, day);
             return date;
+        }
+
+        internal static void OpenFolder(string folder)
+        {
+            if(Path.GetFileName(folder) != null)
+            {
+                var parentFolder = Directory.GetParent(folder);
+                if(parentFolder == null)
+                    return;
+                
+                folder = parentFolder.FullName;
+            }
+
+            var process = new ProcessStartInfo()
+            {
+                FileName = "explorer",
+                Arguments = $"\"{folder}\"",
+                UseShellExecute = true
+            };
+
+            Process.Start(process);
         }
     }
 }

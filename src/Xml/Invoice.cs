@@ -1,4 +1,5 @@
 using System.Xml;
+using Newtonsoft.Json;
 using NFeAssistant.Invoice;
 using NFeAssistant.Util;
 
@@ -8,17 +9,17 @@ namespace NFeAssistant.Xml
     {
         private XmlDocument Document { get; }
 
-        internal Client Client;
-        internal ShippingCompany ShippingCompany;
-        internal InvoiceValue Value;
-        internal List<Product> Products;
-        internal DateTime Emission;
-        internal DateTime Shipment;
-        internal string FilePath { get; }   
-        internal string NumberCode;
-        internal float Weight;
-        internal float Volumes;
-        internal bool NoFails { get { return AllRight; } }
+        [JsonProperty] internal Client Client;
+        [JsonProperty] internal ShippingCompany ShippingCompany;
+        [JsonProperty] internal InvoiceValue Value;
+        [JsonProperty] internal List<Product> Products;
+        [JsonProperty] internal DateTime Emission;
+        [JsonProperty] internal DateTime Shipment;
+        [JsonProperty] internal string FilePath { get; }   
+        [JsonProperty] internal string NumberCode;
+        [JsonProperty] internal float Weight;
+        [JsonProperty] internal float Volumes;
+        [JsonProperty] internal bool NoFails { get { return AllRight; } }
         private bool AllRight;
 
 

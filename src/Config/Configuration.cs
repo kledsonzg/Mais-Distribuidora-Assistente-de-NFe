@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using NFeAssistant.Interface;
 using NFeAssistant.Main;
 using JSON = Newtonsoft.Json;
@@ -77,6 +76,36 @@ namespace NFeAssistant.Config
             
             var modelPath = $"{folder}/models/RELATÓRIO.xlsx";
             return modelPath;
+        }
+
+        internal string? GetBlackLogoImagePath()
+        {
+            var configFolder = Directory.GetParent(FilePath);
+            if(configFolder == null)
+                return null;
+            
+            var folder = configFolder.Parent;
+            if(folder == null)
+                return null;
+            
+            var modelPath = $"{folder}/models/black-logo-2.png";
+            return modelPath;
+        }
+
+        internal string? GetVolumeIdentificationPath()
+        {
+            var configFolder = Directory.GetParent(FilePath);
+            if(configFolder == null)
+                return null;
+            
+            var folder = configFolder.Parent;
+            if(folder == null)
+                return null;
+
+            var path = $"{folder}/Caixas Identificadas";
+            Directory.CreateDirectory(path);
+
+            return path;
         }
         
     }

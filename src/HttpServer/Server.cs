@@ -1,8 +1,5 @@
-using System.Data.SqlTypes;
 using System.Net;
 using System.Text;
-using System.Text.Json.Nodes;
-using System.Text.Unicode;
 using Newtonsoft.Json;
 using NFeAssistant.ExcelBase;
 using NFeAssistant.Interface;
@@ -164,6 +161,55 @@ namespace NFeAssistant.HttpServer
                     var requestBody = new StreamReader(request.InputStream).ReadToEnd();
                     var json = Search.ResultFromSearchRequestContent(requestBody);
                     RespondRequest(response, HttpStatusCode.OK, Encoding.UTF8.GetBytes(json) );
+                    return;
+                }
+                case "/volumeContentIdentification":
+                {
+                    RespondRequest(response, HttpStatusCode.OK, FileServer.GetBytesFromFile("pages/volume-identification.html", true) );
+                    return;
+                }
+                case "/import-nfs":
+                {
+                    if(request.HttpMethod.ToUpper() != "POST")
+                    {
+                        RespondRequest(response, HttpStatusCode.BadRequest, Array.Empty<byte>() );
+                        return;
+                    }
+                    var requestBody = new StreamReader(request.InputStream).ReadToEnd();
+                    var json = NFExporter.GetInvoices(requestBody);
+                    if(json == null)
+                    {
+                        RespondRequest(response, HttpStatusCode.NotFound, Array.Empty<byte>() );
+                        return;
+                    }
+
+                    RespondRequest(response, HttpStatusCode.OK, Encoding.UTF8.GetBytes(json) );
+                    return;
+                }
+                case "/generateVolumeIdentification":
+                {
+                    if(request.HttpMethod.ToUpper() != "POST")
+                    {
+                        RespondRequest(response, HttpStatusCode.BadRequest, Array.Empty<byte>() );
+                        return;
+                    }
+                    var requestBody = new StreamReader(request.InputStream).ReadToEnd();
+                    var folder = Program.Config.GetVolumeIdentificationPath();
+                    var volumeIdentificationRequest = JsonConvert.DeserializeObject<IVolumeIdentificationRequest>(requestBody);
+
+                    if(volumeIdentificationRequest == null || folder == null)
+                    {
+                        RespondRequest(response, HttpStatusCode.NotFound, Array.Empty<byte>() );
+                        return;
+                    }
+
+                    if(NFeAssistant.Word.Label.GenerateLabel($"{folder}/{volumeIdentificationRequest.Nfs}.docx", volumeIdentificationRequest.Volumes) == false)
+                    {
+                        RespondRequest(response, HttpStatusCode.NotFound, Array.Empty<byte>() );
+                        return;
+                    }
+
+                    RespondRequest(response, HttpStatusCode.OK, Array.Empty<byte>() );
                     return;
                 }
                 default:
