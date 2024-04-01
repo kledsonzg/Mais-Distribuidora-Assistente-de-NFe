@@ -1,0 +1,123 @@
+<html>
+    <head>
+        <title>Assistente de NFe - KledsonZG</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="../style/css/index.css">
+        <link rel="stylesheet" href="../style/css/summary-generation.css">
+        <link rel="stylesheet" href="../style/css/summary-result.css">
+    </head>
+    <body>
+        <header>
+            <div id="header-left-side">
+                <img id="header-image-logo" src="../style/images/logo.png" alt="mais-distribuiddora-logo" title="Página inicial" onclick="window.location.assign('/index.html')">
+            </div>
+            <div id="header-right-side">
+                <a class="header-btn" href="/summarySearch">
+                    <span>PROCURAR</span>
+                    <span>NOS</span>
+                    <span>RELAT&Oacute;RIOS</span>
+                </a>
+                <a class="header-btn 2" href="/generateSummary" style="--btn-icon: url('../images/column-chart-icon.png');">
+                    <span>GERAR</span>
+                    <span>RELAT&Oacute;RIO</span>
+                </a>
+            </div>
+        </header>
+        <div id="main" class="hidden">
+            <div id="main-title">
+                <h1>GERAR RELAT&Oacute;RIO</h1>
+            </div>
+            <div id="form">
+                <div class="form-container">
+                    <h4>De:</h4>
+                    <input type="date" id="input-date-from-xml">
+                    <h3>DATA DOS XML'S</h3>
+                    <h4>At&eacute;:</h4>
+                    <input type="date" id="input-date-to-xml">
+                </div>
+                <div class="form-container">
+                    <h4>De:</h3>
+                    <input type="date" id="input-date-from-emission">
+                    <h3>DATA DE EMISS&Atilde;O DAS NF'S</h3>
+                    <h4>At&eacute;:</h3>
+                    <input type="date" id="input-date-to-emission">
+                </div>
+                <div class="form-container text-input">
+                    <h3>TRANSPORTADORA:</h3>           
+                    <input class="input-form-text" type="text" id="input-shipping-company">
+                    <div class="input-checkbox-precision-container">
+                        <span>Precis&atilde;o:</span>
+                        <input type="checkbox" class="input-checkbox-precision">
+                    </div> 
+                </div>
+                <div class="form-container text-input">
+                    <h3>VOLUMES:</h3>           
+                    <input class="input-form-text" type="number" id="input-volumes">
+                    <div class="input-checkbox-precision-container">
+                        <span>Precis&atilde;o:</span>
+                        <input type="checkbox" class="input-checkbox-precision">
+                    </div>
+                </div>
+                <div class="form-container text-input">
+                    <h3>PESO:</h3>           
+                    <input class="input-form-text" type="number" id="input-weight">
+                    <div class="input-checkbox-precision-container">
+                        <span>Precis&atilde;o:</span>
+                        <input type="checkbox" class="input-checkbox-precision">
+                    </div>
+                </div>
+                <div class="form-container text-input">
+                    <h3>PASTA DE SA&Iacute;DA:</h3>           
+                    <input class="input-form-text" type="text" id="input-folder" list="datalist-folder">
+                    <datalist id="datalist-folder"></datalist>
+                </div>
+                <div class="form-container btns">
+                    <button class="form-btn" id="form-btn-generate">GERAR RELAT&Oacute;RIO</button>
+                    <button class="form-btn" id="form-btn-reset">RESETAR</button>
+                </div>
+            </div>
+        </div>
+        <div id="summary-result" class="">
+            <div id="summary-title-container">
+                <h2>T&Iacute;TULO:</h2>
+                <input type="text" id="input-title">
+                <button type="button" id="summary-export" output_folder="" title="Gerar arquivo excel">EXPORTAR</button>
+            </div>
+            <div class="summary-row header">
+                <div class="summary-column">BOT&Otilde;ES:</div>
+                <div class="summary-column">EMISS&Atilde;O:</div>
+                <div class="summary-column">NFE:</div>
+                <div class="summary-column">CLIENTE:</div>
+                <div class="summary-column">CIDADE:</div>
+                <div class="summary-column">VOLUME:</div>
+                <div class="summary-column">PESO:</div>
+                <div class="summary-column">VALOR:</div>
+            </div>
+            <div class="summary-row summary-row-model hidden">
+                <div class="summary-column btns">
+                    <button class="button-row button-row-move"></button>
+                    <button class="button-row button-row-delete"></button>
+                    <button class="button-row button-row-insert"></button>
+                </div>
+                <div class="summary-column"><textarea  placeholder="Data de Emiss&atilde;o" class="input-column-emission" hidden></textarea><span></span></div>
+                <div class="summary-column"><textarea  placeholder="N&uacute;mero NF" class="input-column-nf" hidden></textarea><span></span></div>
+                <div class="summary-column"><textarea  placeholder="Cliente" class="input-column-client" hidden></textarea><span></span></div>
+                <div class="summary-column"><textarea  placeholder="Cidade" class="input-column-city" hidden></textarea><span></span></div>
+                <div class="summary-column"><textarea  placeholder="Volume" class="input-column-volume" hidden></textarea><span></span></div>
+                <div class="summary-column"><textarea  placeholder="Peso" class="input-column-weight" hidden></textarea><span></span></div>
+                <div class="summary-column"><textarea  placeholder="Valor" class="input-column-value" hidden></textarea><span></span></div>
+            </div>
+            
+        </div>
+        <footer>
+            <div id="footer-credits">
+                <div><span>Desenvolvido por <b>KledsonZG</b></span></div>   
+                <a href="https://github.com/kledsonzg">
+                    <img class="footer-img" src="../style/images/github-icon.png" alt="KledsonZG's Github Profile" title="GitHub: KledsonZG"/>
+                </a>
+            </div>   
+        </footer>
+        <script src="../scripts/summary-generate.js"></script>
+        <script src="../scripts/summary-interaction.js"></script>
+    </body>
+</html>
