@@ -1,12 +1,6 @@
-using System.Text.Json.Nodes;
-using Newtonsoft.Json;
 using NFeAssistant.Invoice;
 using NFeAssistant.Main;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.Format;
 using NPOI.SS.UserModel;
-using NPOI.SS.Util;
-using NPOI.XSSF.UserModel;
 
 namespace NFeAssistant.ExcelBase
 {
@@ -19,8 +13,8 @@ namespace NFeAssistant.ExcelBase
             var tempFolder = $"{Path.GetTempPath()}/KledsonZG/Assistente de NFe";
             var folder = Directory.CreateDirectory(tempFolder);
 
-            var summaryFileModelPath = Program.Config.GetExcelSummaryModelPath();
-            if(summaryFileModelPath == null || SummaryPath == null)
+            var excelSummaryModelPath = Program.Config.GetExcelSummaryModelPath();
+            if(excelSummaryModelPath == null || SummaryPath == null)
                 return null;
             
             var tempFile = $"{tempFolder}/{fileName}.xlsx";
@@ -105,11 +99,16 @@ namespace NFeAssistant.ExcelBase
 
             var filePath = $"{outputFolder}/{fileName}.xlsx";
 
-            File.Delete(tempFile);
-            controller.Save(tempFile);
+            if(File.Exists(tempFile) )
+            {
+                File.Delete(tempFile);        
+                controller.Save(tempFile);
+                File.Copy(tempFile, filePath, true);
 
-            File.Copy(tempFile, filePath, true);
-            return filePath;
+                return filePath;
+            }
+                
+            return null;
         }
     }
 }
