@@ -1,5 +1,7 @@
+using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using NFeAssistant.Main;
+using NPOI.Util.ArrayExtensions;
 
 namespace NFeAssistant.Xml
 {
@@ -9,7 +11,6 @@ namespace NFeAssistant.Xml
         {
             var json = JsonConvert.DeserializeObject<string[]>(requestBody);
             var xmlPaths = Program.Config.Properties.App.XmlPath;
-            var threadList = new List<Thread>();
 
             if(json == null)
             {
@@ -18,60 +19,52 @@ namespace NFeAssistant.Xml
 
             var nfsList = new List<Invoice>();
             
-            foreach(var path in xmlPaths)
+            Parallel.ForEach(xmlPaths, (path) =>
             {
-                var thread = new Thread(new ThreadStart(delegate 
-                {
-                    GetInvoicesFromXML(path, json, nfsList);
-                } ) );
+                GetInvoicesFromXML(path, new List<string>(json), nfsList);
+            } );
 
-                threadList.Add(thread);
-                thread.Start();
-            }
-
-            threadList.ForEach(thread => thread.Join() );
             return JsonConvert.SerializeObject(nfsList);
         }
 
-        private static void GetInvoicesFromXML(string folder, string[] numberCodes, List<Invoice> invoiceList)
+        private static void GetInvoicesFromXML(string folder, List<string> numberCodes, List<Invoice> invoiceList)
         {
             var files = Directory.GetFiles(folder, "*.xml", SearchOption.AllDirectories);
-            var threadList = new List<Thread>();
-            var fileList = new List<string>();
             var invoices = new List<Invoice>();
 
-            foreach(var file in files)
+            Parallel.ForEach(files, (file, loopState) =>
             {
-            
-                var thread = new Thread(new ThreadStart(delegate
+                try
                 {
-                    try
+                    if(numberCodes.Count == 0)
                     {
-                        var invoice = Invoice.GetFromXMLFile(file);
-                        if(invoice == null)
-                        {
-                            Logger.Logger.Write($"A instância de 'Invoice' no arquivo: '{file}' é nula.");
-                            return;
-                        }
-                        if(!numberCodes.Contains(invoice.NumberCode) )
-                            return;
-                        
-                        lock(invoices)
-                        {
-                            invoices.Add(invoice);
-                        }
+                        loopState.Stop();
                     }
-                    catch(Exception e)
+
+                    var invoice = Invoice.GetFromXMLFile(file);
+                    if(invoice == null)
                     {
-                        Logger.Logger.Write($"Houve uma exceção no arquivo: '{file}'. Motivo: {e.Message} | Pilhas: {e.StackTrace}");
+                        Logger.Logger.Write($"A instância de 'Invoice' no arquivo: '{file}' é nula.");
+                        return;
                     }
-                } ) );
+                    if(!numberCodes.Contains(invoice.NumberCode) )
+                        return;
+                    
+                    lock(invoices)
+                    {
+                        invoices.Add(invoice);
+                    }
 
-                threadList.Add(thread);
-                thread.Start();
-            }
-
-            threadList.ForEach(thread => thread.Join() );
+                    lock(numberCodes)
+                    {
+                        numberCodes.Remove(invoice.NumberCode);
+                    }
+                }
+                catch(Exception e)
+                {
+                    Logger.Logger.Write($"Houve uma exceção no arquivo: '{file}'. Motivo: {e.Message} | Pilhas: {e.StackTrace}");
+                }
+            } );
 
             lock(invoiceList)
             {
