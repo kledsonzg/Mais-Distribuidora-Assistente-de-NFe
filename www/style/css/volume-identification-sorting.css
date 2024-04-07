@@ -152,12 +152,12 @@
     justify-content: center;
     align-items: center;
     font-family: Calibri;
-    overflow: auto;
 }
 #volume-content-window{
     width: 640px; height: 480px;
     border: #ECB159 2px solid;
     background-color: white;
+    overflow: auto;
 }
 #volume-content-header{
     position: relative;
