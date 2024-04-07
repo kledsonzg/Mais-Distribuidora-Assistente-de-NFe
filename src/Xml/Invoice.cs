@@ -17,6 +17,7 @@ namespace NFeAssistant.Xml
         [JsonProperty] internal DateTime Shipment;
         [JsonProperty] internal string FilePath { get; }   
         [JsonProperty] internal string NumberCode;
+        [JsonProperty] internal string AccessKey;
         [JsonProperty] internal float Weight;
         [JsonProperty] internal float Volumes;
         [JsonProperty] internal bool NoFails { get { return AllRight; } }
@@ -60,15 +61,29 @@ namespace NFeAssistant.Xml
             var shippingCompanyElement = root.SelectSingleNode(".//transporta");
             var productsElements = root.GetElementsByTagName("det");
             var shippingInfoElement = root.SelectSingleNode(".//transp/vol");
+            var invoiceProtocolElement = root.SelectSingleNode(".//protNFe/infProt");
             
-            if(aboutInvoiceElement == null || clientElement == null || valuesElement == null || shippingCompanyElement == null || shippingInfoElement == null)
+            if(aboutInvoiceElement == null || clientElement == null || valuesElement == null || shippingCompanyElement == null || shippingInfoElement == null || invoiceProtocolElement == null)
                 return;                 
             
-            if(!SetClient(clientElement) || !SetShippingCompany(shippingCompanyElement) || !SetInvoiceValues(valuesElement) || !SetInvoiceInfo(aboutInvoiceElement) || !SetVolumetry(shippingInfoElement) )
+            if(!SetClient(clientElement) || !SetShippingCompany(shippingCompanyElement) || 
+                !SetInvoiceValues(valuesElement) || !SetInvoiceInfo(aboutInvoiceElement) || 
+                !SetVolumetry(shippingInfoElement) || !SetInvoiceAccessKey(invoiceProtocolElement) 
+            )
                 return;
             
             SetProdutsList(productsElements);
             AllRight = true;
+        }
+
+        private bool SetInvoiceAccessKey(XmlNode invoiceProtocolElement)
+        {
+            var keyElement = invoiceProtocolElement.SelectSingleNode(".//chNFe");
+            if(keyElement == null)
+                return false;
+
+            this.AccessKey = keyElement.InnerText;
+            return true;
         }
 
         private bool SetVolumetry(XmlNode shippingInfoElement)
