@@ -16,14 +16,10 @@ internal static class SummaryGenerator
 
         if(!Directory.Exists(filter.OutputFolder) )
             return null;
-        
-        var xmlPaths = Program.Config.Properties.App.XmlPath;
+
         var rows = new List<ExcelRow>();
 
-        Parallel.ForEach(xmlPaths, (path) => 
-        {
-            GetResultFromXmlFolder(path, filter, rows);
-        } );
+        GetResultFromXmlFolder(filter, rows);
 
         var result = new ISummaryResult(){
             OutputFolder = filter.OutputFolder,
@@ -32,17 +28,17 @@ internal static class SummaryGenerator
         return JsonConvert.SerializeObject(result);
     }
 
-    private static void GetResultFromXmlFolder(string folder, ISummaryGenerationJSONBody filter, List<ExcelRow> rows)
+    private static void GetResultFromXmlFolder(ISummaryGenerationJSONBody filter, List<ExcelRow> rows)
     {
-        var files = Directory.GetFiles(folder, "*.xml", SearchOption.AllDirectories);
+        var files = FileListUpdater.Updater.GetXMLFiles();
         var fileList = new List<string>();
         var rowsToAdd = new List<ExcelRow>();
         var invalidDate = new DateTime(1, 1, 1);
         
         Parallel.ForEach(files, (file) =>
         {
-            var creationTime = File.GetCreationTime(file);
-            var modificationTime = File.GetLastWriteTime(file);       
+            var creationTime = file.CreationTime;
+            var modificationTime = file.LastWriteTime;       
 
             if(modificationTime < creationTime)
                 creationTime = modificationTime;
@@ -60,7 +56,7 @@ internal static class SummaryGenerator
             
             lock(fileList)
             {
-                fileList.Add(file);
+                fileList.Add(file.FullName);
             }
             
         } );
@@ -133,9 +129,7 @@ internal static class SummaryGenerator
             }
         } );
         
-        lock(rows)
-        {
-            rows.AddRange(rowsToAdd);
-        }
+
+        rows.AddRange(rowsToAdd);
     }
 }

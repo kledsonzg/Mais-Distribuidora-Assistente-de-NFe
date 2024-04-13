@@ -15,33 +15,22 @@ namespace NFeAssistant.ExcelBase
             //Console.WriteLine($"peso:{searchContent.ToSearch.Weight.Value},valor:{searchContent.ToSearch.Value.Value},cliente:{searchContent.ToSearch.Client.Value},cidade:{searchContent.ToSearch.City.Value},volumes:{searchContent.ToSearch.Volumes.Value},nfe:{searchContent.ToSearch.NfeNumber.Value},transportadora:{searchContent.ToSearch.ShippingCompany.Value},data:{searchContent.ToSearch.Date.Value}");
 
             List<ISearchResult> results = new();
-            List<Thread> threadsList = new();
 
-            Parallel.ForEach(summaryFolders, (folder) => 
-            {
-                var resultArray = SearchInSummaries(folder, searchContent.ToSearch);
-                lock(results)
-                {
-                    results.AddRange(resultArray);
-                }
-            } );
+            var resultArray = SearchInSummaries(searchContent.ToSearch);
+            results.AddRange(resultArray);
 
-            Program.PrintLine("results count: " + results.Count);
+            Program.PrintLine("TOTAL DE RESULTADOS: " + results.Count);
 
             return JSON.JsonConvert.SerializeObject(results, JSON.Formatting.Indented);
         }
 
-        private static ISearchResult[] SearchInSummaries(string folder, ISearchRequestContent searchContent)
+        private static ISearchResult[] SearchInSummaries(ISearchRequestContent searchContent)
         {
             List<ISearchResult> validResults = new();
-            List<FileInfo> files = new();
-            DirectoryInfo folderInfo = new DirectoryInfo(folder);
+            List<FileInfo> files = FileListUpdater.Updater.GetExcelSheetFiles();
 
             var date = searchContent.GetDateTime();
             var invalidDate = new DateTime(1, 1, 1);
-            
-            files = folderInfo.GetFiles("*.xls", SearchOption.AllDirectories).ToList();
-            files.AddRange(folderInfo.GetFiles("*.xlsx", SearchOption.AllDirectories) );
 
             for(int i = 0; i < files.Count && files.Count > 0; i++)
             {
@@ -83,8 +72,6 @@ namespace NFeAssistant.ExcelBase
                     continue;
                 }
             }
-         
-            var threadsList = new List<Thread>();
 
             Parallel.ForEach(files, (file) =>
             {

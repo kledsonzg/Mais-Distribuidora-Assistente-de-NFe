@@ -10,7 +10,6 @@ namespace NFeAssistant.Xml
         internal static string? GetInvoices(string requestBody)
         {
             var json = JsonConvert.DeserializeObject<string[]>(requestBody);
-            var xmlPaths = Program.Config.Properties.App.XmlPath;
 
             if(json == null)
             {
@@ -18,18 +17,14 @@ namespace NFeAssistant.Xml
             }
 
             var nfsList = new List<Invoice>();
-            
-            Parallel.ForEach(xmlPaths, (path) =>
-            {
-                GetInvoicesFromXML(path, new List<string>(json), nfsList);
-            } );
+            GetInvoicesFromXML(new List<string>(json), nfsList);
 
             return JsonConvert.SerializeObject(nfsList);
         }
 
-        private static void GetInvoicesFromXML(string folder, List<string> numberCodes, List<Invoice> invoiceList)
+        private static void GetInvoicesFromXML(List<string> numberCodes, List<Invoice> invoiceList)
         {
-            var files = Directory.GetFiles(folder, "*.xml", SearchOption.AllDirectories);
+            var files = FileListUpdater.Updater.GetXMLFiles();
             var invoices = new List<Invoice>();
 
             Parallel.ForEach(files, (file, loopState) =>
@@ -41,10 +36,10 @@ namespace NFeAssistant.Xml
                         loopState.Stop();
                     }
 
-                    var invoice = Invoice.GetFromXMLFile(file);
+                    var invoice = Invoice.GetFromXMLFile(file.FullName);
                     if(invoice == null)
                     {
-                        Logger.Logger.Write($"A instância de 'Invoice' no arquivo: '{file}' é nula.");
+                        Logger.Logger.Write($"A instância de 'Invoice' no arquivo: '{file.FullName}' é nula.");
                         return;
                     }
                     if(!numberCodes.Contains(invoice.NumberCode) )
@@ -62,14 +57,11 @@ namespace NFeAssistant.Xml
                 }
                 catch(Exception e)
                 {
-                    Logger.Logger.Write($"Houve uma exceção no arquivo: '{file}'. Motivo: {e.Message} | Pilhas: {e.StackTrace}");
+                    Logger.Logger.Write($"Houve uma exceção no arquivo: '{file.FullName}'. Motivo: {e.Message} | Pilhas: {e.StackTrace}");
                 }
             } );
 
-            lock(invoiceList)
-            {
-                invoiceList.AddRange(invoices);
-            }
+            invoiceList.AddRange(invoices);
         }
     }
 }

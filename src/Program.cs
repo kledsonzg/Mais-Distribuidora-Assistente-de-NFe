@@ -33,8 +33,12 @@ namespace NFeAssistant.Main
 
         private static void Run()
         {
-            PrintLine("Em execução!");
+            PrintLine("Inicializando programa...");
+
             Logger.Logger.Start();
+            FileListUpdater.Updater.Start();
+
+            PrintLine("Em execução!");
             Server.Start();
         }
 
