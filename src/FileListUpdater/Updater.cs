@@ -1,3 +1,4 @@
+using NFeAssistant.Cache;
 using NFeAssistant.Main;
 
 namespace NFeAssistant.FileListUpdater
@@ -7,19 +8,108 @@ namespace NFeAssistant.FileListUpdater
     {
         private static List<FileInfo> _xmlFileList = new();
         private static List<FileInfo> _excelFileList = new();
+        private static List<FileSystemWatcher> _fileWatcherList = new();
         private static FileDateComparer _comparer = new();
 
         internal static void Start()
         {
-            Program.PrintLine("Buscando arquivos XML e Planilhas...");
+            int[] steps = new int[]{0, 4};
+            Program.PrintLine($"(PASSO {++steps[0]}/{steps[1] }) Buscando arquivos XML e Planilhas...");
             FillFileLists();
             Program.PrintLine("Busca concluída!");
             Program.PrintLine($"Total de arquivos 'XML' encontrados: {_xmlFileList.Count}.");
             Program.PrintLine($"Total de planilhas encontradas: {_excelFileList.Count}.");
 
-            Program.PrintLine("Inicializando os verificadores de pastas...");
+            Program.PrintLine($"(PASSO {++steps[0]}/{steps[1] }) Inicializando os verificadores de pastas...");
             InitializeFileSystemWatchers();
             Program.PrintLine("Verificadores prontos!");
+
+            Program.PrintLine($"(PASSO {++steps[0]}/{steps[1] }) Inserindo relatórios na memória...");
+            InsertSummariesIntoCache();
+            Program.PrintLine($"(PASSO {++steps[0]}/{steps[1] }) Inserindo Notas Fiscais na memória...");
+            InsertInvoicesIntoCache();
+
+            Program.PrintLine("Processo de cache concluído!");
+        }
+
+        private static void InsertSummariesIntoCache()
+        {
+            Parallel.ForEach(_excelFileList, (fileInfo) => 
+            {
+                bool result = false;
+
+                result = InsertSummaryIntoCacheInSafeMode(fileInfo);
+
+                if(!result)
+                {
+                    Logger.Logger.Write($"Falha ao inserir o seguinte arquivo (relatório) na memória:\nArquivo: {fileInfo.FullName}");
+                }
+            } );
+        }
+
+        private static bool InsertSummaryIntoCacheInSafeMode(FileInfo fileInfo)
+        {
+            bool result = false;
+            if(fileInfo.Name.IndexOf("~$") == 0)
+                return true;
+            
+            try
+            {
+                result = NFeAssistant.Cache.Cache.InsertSummaryFileIntoCache(fileInfo);
+            }
+            catch(IOException exception)
+            {
+                bool solved = false;
+                try
+                {
+                    var tempFolder = $"{Path.GetTempPath()}/KledsonZG/Assistente de NFe";
+                    var fileDest = $"{tempFolder}/{Path.GetFileName(fileInfo.FullName)}";
+                    File.Copy(fileInfo.FullName, fileDest, true);
+                    result = NFeAssistant.Cache.Cache.InsertSummaryFileIntoCache(new FileInfo(fileDest), fileInfo.FullName);
+                    solved = true;
+                }
+                catch(Exception exceptionFromCopyFile)
+                {
+                    Logger.Logger.Write($"Erro durante processo de cópia de um relatório para fazer a leitura. Arquivo: {fileInfo.FullName} | Motivo: {exceptionFromCopyFile.Message} | Detalhes: {exceptionFromCopyFile.StackTrace}");
+                }
+                if(!solved)
+                {
+                    Logger.Logger.Write($"Houve um erro durante a leitura do arquivo: {fileInfo.FullName} | Tipo de exceção: {exception.GetBaseException()}");
+                }
+            }
+            catch(Exception exception)
+            {
+                Logger.Logger.Write($"Houve um erro durante a leitura do arquivo: {fileInfo.FullName} | Tipo de exceção: {exception.GetBaseException()}");
+            }
+
+            return result;
+        }
+
+        private static bool InsertInvoiceIntoCacheInSafeMode(FileInfo fileInfo)
+        {
+            try
+            {
+                NFeAssistant.Cache.Cache.InsertInvoiceFileIntoCache(fileInfo);
+            }
+            catch(Exception exception)
+            {
+                Logger.Logger.Write($"Houve um erro durante a leitura do arquivo: {fileInfo.FullName} | Tipo de exceção: {exception.GetBaseException()}");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static void InsertInvoicesIntoCache()
+        {
+            Parallel.ForEach(_xmlFileList, (fileInfo) => 
+            {
+                bool result = InsertInvoiceIntoCacheInSafeMode(fileInfo);
+                if(!result)
+                {
+                    Logger.Logger.Write($"Falha ao inserir o seguinte arquivo (Nota Fiscal) na memória:\nArquivo: {fileInfo.FullName}");
+                }
+            } );
         }
 
         private static void FillFileLists()
@@ -79,6 +169,8 @@ namespace NFeAssistant.FileListUpdater
                 watcher.Renamed += OnFileRename;
                 watcher.Created += OnFileCreate;
                 watcher.Deleted += OnFileDelete;
+                watcher.Changed += OnFileUpdate;
+                _fileWatcherList.Add(watcher);
             }
             foreach(var path in Program.Config.Properties.App.SummaryPath)
             {
@@ -101,6 +193,8 @@ namespace NFeAssistant.FileListUpdater
                 watcher.Renamed += OnFileRename;
                 watcher.Created += OnFileCreate;
                 watcher.Deleted += OnFileDelete;
+                watcher.Changed += OnFileUpdate;
+                _fileWatcherList.Add(watcher);
 
                 watcher = new FileSystemWatcher()
                 {
@@ -121,35 +215,84 @@ namespace NFeAssistant.FileListUpdater
                 watcher.Renamed += OnFileRename;
                 watcher.Created += OnFileCreate;
                 watcher.Deleted += OnFileDelete;
+                watcher.Changed += OnFileUpdate;
+                _fileWatcherList.Add(watcher);
             }
         }
 
-        private static void OnFileRename(object sender, RenamedEventArgs e)
-        {
-            List<FileInfo> fileList;
-            switch(Path.GetExtension(e.OldFullPath).ToLower() )
+        private static void OnFileUpdate(object sender, FileSystemEventArgs e)
+        {                
+            NFeAssistant.Cache.Cache.RemoveContentFromCacheByFile(new FileInfo(e.FullPath) );
+
+            switch(Path.GetExtension(e.FullPath).ToLower() )
             {
                 case ".xml":
                 {
-                    fileList = _xmlFileList;
+                    InsertInvoiceIntoCacheInSafeMode(new FileInfo(e.FullPath) );
                     break;
                 }
                 case ".xlsx" : case ".xls":
                 {
-                    fileList = _excelFileList;
+                    InsertSummaryIntoCacheInSafeMode(new FileInfo(e.FullPath) );
                     break;
                 }
                 default: return;
-            }
-                
+            }         
+        }
+        
+         private static void OnFileRename(object sender, RenamedEventArgs e)
+        {
+            var oldExtension = Path.GetExtension(e.OldFullPath).ToLower();
+            var extension = Path.GetExtension(e.FullPath).ToLower();
+
+            FileInfo oldFile = new(e.OldFullPath);
+            FileInfo file = new(e.FullPath);
+
+            switch(oldExtension)
             {
-                lock(fileList)
+                case ".xml":
                 {
-                    int index = fileList.FindIndex(file => file.FullName == e.OldFullPath);
-                    if(index == -1)
-                        return;
-                    
-                    fileList[index] = new FileInfo(e.FullPath);
+                    lock(_xmlFileList)
+                    {
+                        _xmlFileList.RemoveAll(fileInfo => fileInfo.FullName == oldFile.FullName);
+                    }
+                    break;
+                }
+                case ".xlsx" : case ".xls":
+                {
+                    lock(_excelFileList)
+                    {
+                        _excelFileList.RemoveAll(fileInfo => fileInfo.FullName == oldFile.FullName);
+                    } 
+                    break;
+                }
+            }
+            
+            NFeAssistant.Cache.Cache.RemoveContentFromCacheByFile(oldFile);
+
+            switch(extension)
+            {
+                case ".xml":
+                {
+                    lock(_xmlFileList)
+                    {
+                        _xmlFileList.Add(file);
+                        SortList(_xmlFileList);
+                    }
+
+                    InsertInvoiceIntoCacheInSafeMode(file);
+                    break;
+                }
+                case ".xlsx" : case ".xls":
+                {                
+                    lock(_excelFileList)
+                    {
+                        _excelFileList.Add(file);
+                        SortList(_excelFileList);
+                    }
+
+                    InsertSummaryIntoCacheInSafeMode(file);
+                    break;
                 }
             }
         }
@@ -157,6 +300,7 @@ namespace NFeAssistant.FileListUpdater
         private static void OnFileDelete(object sender, FileSystemEventArgs e)
         {
             List<FileInfo> fileList;
+
             switch(Path.GetExtension(e.FullPath).ToLower() )
             {
                 case ".xml":
@@ -172,42 +316,44 @@ namespace NFeAssistant.FileListUpdater
                 default: return;
             }
                 
+            lock(fileList)
             {
-                lock(fileList)
-                {
-                    int index = fileList.FindIndex(file => file.FullName == e.FullPath);
-                    if(index == -1)
-                        return;
-                    
-                    fileList.RemoveAt(index);
-                }
+                string oldFilePath = e.FullPath.Replace('/', '\\');
+                int index = fileList.FindIndex(file => file.FullName == oldFilePath);
+                if(index == -1)
+                    return;
+                
+                fileList.RemoveAt(index);
             }
+
+            NFeAssistant.Cache.Cache.RemoveContentFromCacheByFile(new FileInfo(e.FullPath) );
         }
 
         private static void OnFileCreate(object sender, FileSystemEventArgs e)
         {
             List<FileInfo> fileList;
+            Program.PrintLine($"Arquivo criado: {e.FullPath}");
             switch(Path.GetExtension(e.FullPath).ToLower() )
             {
                 case ".xml":
                 {
                     fileList = _xmlFileList;
+                    InsertInvoiceIntoCacheInSafeMode(new FileInfo(e.FullPath) );
                     break;
                 }
                 case ".xlsx" : case ".xls":
-                {
+                {                 
                     fileList = _excelFileList;
+                    InsertSummaryIntoCacheInSafeMode(new FileInfo(e.FullPath) );
                     break;
                 }
                 default: return;
             }
                 
+            lock(fileList)
             {
-                lock(fileList)
-                {
-                    fileList.Add(new FileInfo(e.FullPath) );
-                    SortList(fileList);
-                }
+                fileList.Add(new FileInfo(e.FullPath) );
+                SortList(fileList);
             }
         }
 

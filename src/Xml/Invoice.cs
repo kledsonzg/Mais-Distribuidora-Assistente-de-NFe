@@ -35,6 +35,9 @@ namespace NFeAssistant.Xml
 
             Document.Load(reader);
             Read();
+
+            // Liberar os recursos.
+            Document = new();
         }
 
         internal static Invoice? GetFromXMLFile(string filePath)

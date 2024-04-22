@@ -75,35 +75,7 @@ namespace NFeAssistant.ExcelBase
 
             Parallel.ForEach(files, (file) =>
             {
-                
-                try
-                {
-                    SearchAndAddFromSummarie(file, searchContent, validResults);
-                }
-                catch(Exception exception)
-                {
-                    bool solved = false;
-                    if(exception is IOException)
-                    {
-                        try
-                        {
-                            var tempFolder = $"{Path.GetTempPath()}/KledsonZG/Assistente de NFe";
-                            var fileDest = $"{tempFolder}/{Path.GetFileName(file.Name)}";
-                            File.Copy(file.FullName, fileDest, true);
-                            SearchAndAddFromSummarie(new FileInfo(fileDest), searchContent, validResults);
-                            solved = true;
-                        }   
-                        catch(Exception exception2)
-                        {
-                            Logger.Logger.Write($"Erro durante processo de cópia de um relatório para fazer a leitura. Arquivo: {file.FullName} |Motivo: {exception2.Message} | Detalhes: {exception2.StackTrace}");
-                        }             
-                    }
-
-                    if(!solved)
-                    {
-                        Logger.Logger.Write($"Houve um erro durante a leitura do arquivo: {file.FullName} | Motivo: {exception.Message} | Detalhes: {exception.StackTrace}");
-                    }           
-                }
+                SearchAndAddFromSummarie(file, searchContent, validResults);
             } );
 
             Program.PrintLine($"TOTAL DE ARQUIVOS: {files.Count}.");      
@@ -113,38 +85,34 @@ namespace NFeAssistant.ExcelBase
         static void SearchAndAddFromSummarie(FileInfo file, ISearchRequestContent searchContent, List<ISearchResult> validResults)
         {
             var results = new List<SearchResult>();
-            var reader = ExcelFile.Read(file.FullName);
-
-            if(reader == null || reader.ContainsValidSheet() == false)
-            {
-                Logger.Logger.Write($"O arquivo '{file.FullName}' foi pulado pois não foi encontrado uma planilha válida.");
-                return;
-            }
+            var summary = NFeAssistant.Cache.Cache.SummaryList.FirstOrDefault(_summary => _summary.FilePath.Replace('/', '\\') == file.FullName);
+            if(summary == null)
+                return;         
 
             if(searchContent.ShippingCompany.Precise)
             {
-                if(searchContent.ShippingCompany.Value.ToLower().Contains(reader.Title.ToLower() ) )
+                if(searchContent.ShippingCompany.Value.ToLower().Contains(summary.Title.ToLower() ) )
                 {
-                    Logger.Logger.Write($"Não foi encontrado planilhas com a transportadora procurada. Arquivo: '{file.FullName}' | Transportadora procurada: '{searchContent.ShippingCompany.Value}' | Titulo: {reader.Title}");
+                    Logger.Logger.Write($"Não foi encontrado planilhas com a transportadora procurada. Arquivo: '{file.FullName}' | Transportadora procurada: '{searchContent.ShippingCompany.Value}' | Titulo: {summary.Title}");
                     return;
                 }
             }
             else
             {
-                if(reader.Title.ToLower().Contains(searchContent.ShippingCompany.Value.ToLower() ) == false)
+                if(summary.Title.ToLower().Contains(searchContent.ShippingCompany.Value.ToLower() ) == false)
                 {
-                    Logger.Logger.Write($"Não foi encontrado planilhas com a transportadora procurada. Arquivo: '{file.FullName}' | Transportadora procurada: '{searchContent.ShippingCompany.Value}' | Titulo: {reader.Title}");
+                    Logger.Logger.Write($"Não foi encontrado planilhas com a transportadora procurada. Arquivo: '{file.FullName}' | Transportadora procurada: '{searchContent.ShippingCompany.Value}' | Titulo: {summary.Title}");
                     return;
                 }
             }
 
-            var dates = reader.GetDates().ToList();
-            var numbers = reader.GetFiscalNumbers().ToList();
-            var weights = reader.GetWeights().ToList();
-            var clients = reader.GetClients().ToList();
-            var cities = reader.GetCities().ToList();
-            var values = reader.GetValues().ToList();
-            var volumes = reader.GetVolumes().ToList();
+            var dates = summary.Contents.Where(content => content.Type == Definitions.Excel.ColumnType.COLUMN_NFE_DATE);
+            var numbers = summary.Contents.Where(content => content.Type == Definitions.Excel.ColumnType.COLUMN_NFE_NUMBER);
+            var weights = summary.Contents.Where(content => content.Type == Definitions.Excel.ColumnType.COLUMN_NFE_WEIGHT);
+            var clients = summary.Contents.Where(content => content.Type == Definitions.Excel.ColumnType.COLUMN_NFE_CLIENT);
+            var cities = summary.Contents.Where(content => content.Type == Definitions.Excel.ColumnType.COLUMN_NFE_CITY);;
+            var values = summary.Contents.Where(content => content.Type == Definitions.Excel.ColumnType.COLUMN_NFE_VALUE);
+            var volumes = summary.Contents.Where(content => content.Type == Definitions.Excel.ColumnType.COLUMN_NFE_VOLUME);
 
             foreach(var result in dates)
             {                    

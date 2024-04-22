@@ -1,7 +1,4 @@
-using System.Collections.Concurrent;
 using Newtonsoft.Json;
-using NFeAssistant.Main;
-using NPOI.Util.ArrayExtensions;
 
 namespace NFeAssistant.Xml
 {
@@ -24,40 +21,26 @@ namespace NFeAssistant.Xml
 
         private static void GetInvoicesFromXML(List<string> numberCodes, List<Invoice> invoiceList)
         {
-            var files = FileListUpdater.Updater.GetXMLFiles();
             var invoices = new List<Invoice>();
 
-            Parallel.ForEach(files, (file, loopState) =>
+            Parallel.ForEach(NFeAssistant.Cache.Cache.InvoiceList, (invoice, loopState) =>
             {
-                try
+                if(numberCodes.Count == 0)
                 {
-                    if(numberCodes.Count == 0)
-                    {
-                        loopState.Stop();
-                    }
-
-                    var invoice = Invoice.GetFromXMLFile(file.FullName);
-                    if(invoice == null)
-                    {
-                        Logger.Logger.Write($"A instância de 'Invoice' no arquivo: '{file.FullName}' é nula.");
-                        return;
-                    }
-                    if(!numberCodes.Contains(invoice.NumberCode) )
-                        return;
-                    
-                    lock(invoices)
-                    {
-                        invoices.Add(invoice);
-                    }
-
-                    lock(numberCodes)
-                    {
-                        numberCodes.Remove(invoice.NumberCode);
-                    }
+                    loopState.Stop();
                 }
-                catch(Exception e)
+
+                if(!numberCodes.Contains(invoice.NumberCode) )
+                    return;
+                
+                lock(invoices)
                 {
-                    Logger.Logger.Write($"Houve uma exceção no arquivo: '{file.FullName}'. Motivo: {e.Message} | Pilhas: {e.StackTrace}");
+                    invoices.Add(invoice);
+                }
+
+                lock(numberCodes)
+                {
+                    numberCodes.RemoveAll(number => number == invoice.NumberCode);
                 }
             } );
 
