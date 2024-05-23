@@ -335,8 +335,8 @@ namespace NFeAssistant.FileListUpdater
             Thread newFileThread = new(new ThreadStart(delegate 
             {
                 List<FileInfo> fileList;
-                // Espera 2 segundos antes do arquivo ser lido.
-                Thread.Sleep(2000);
+                // Espera 5 segundos antes do arquivo ser lido.
+                Thread.Sleep(5000);
                 switch(Path.GetExtension(e.FullPath).ToLower() )
                 {
                     case ".xml":
