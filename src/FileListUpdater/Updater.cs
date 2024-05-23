@@ -331,30 +331,37 @@ namespace NFeAssistant.FileListUpdater
 
         private static void OnFileCreate(object sender, FileSystemEventArgs e)
         {
-            List<FileInfo> fileList;
             Program.PrintLine($"Arquivo criado: {e.FullPath}");
-            switch(Path.GetExtension(e.FullPath).ToLower() )
+            Thread newFileThread = new(new ThreadStart(delegate 
             {
-                case ".xml":
+                List<FileInfo> fileList;
+                // Espera 2 segundos antes do arquivo ser lido.
+                Thread.Sleep(2000);
+                switch(Path.GetExtension(e.FullPath).ToLower() )
                 {
-                    fileList = _xmlFileList;
-                    InsertInvoiceIntoCacheInSafeMode(new FileInfo(e.FullPath) );
-                    break;
+                    case ".xml":
+                    {
+                        fileList = _xmlFileList;
+                        InsertInvoiceIntoCacheInSafeMode(new FileInfo(e.FullPath) );
+                        break;
+                    }
+                    case ".xlsx" : case ".xls":
+                    {                 
+                        fileList = _excelFileList;
+                        InsertSummaryIntoCacheInSafeMode(new FileInfo(e.FullPath) );
+                        break;
+                    }
+                    default: return;
                 }
-                case ".xlsx" : case ".xls":
-                {                 
-                    fileList = _excelFileList;
-                    InsertSummaryIntoCacheInSafeMode(new FileInfo(e.FullPath) );
-                    break;
+                    
+                lock(fileList)
+                {
+                    fileList.Add(new FileInfo(e.FullPath) );
+                    SortList(fileList);
                 }
-                default: return;
-            }
-                
-            lock(fileList)
-            {
-                fileList.Add(new FileInfo(e.FullPath) );
-                SortList(fileList);
-            }
+            } ) );
+
+            newFileThread.Start(); 
         }
 
         internal static List<FileInfo> GetXMLFiles() => new List<FileInfo>(_xmlFileList);
