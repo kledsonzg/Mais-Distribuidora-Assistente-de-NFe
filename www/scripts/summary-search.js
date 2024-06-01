@@ -37,6 +37,32 @@ document.getElementById('btn-advanced').addEventListener('click', () => {
     advancedPanel.classList.add('anim');
 } );
 
+document.getElementById('checkbox-precision-nfe-number').addEventListener('click', () => {
+    let isChecked = document.querySelector('#checkbox-precision-nfe-number').checked;
+    let nfeNumberInput = document.querySelector('#input-nfe-number');
+    let canPaint = true, paintChangeCount = 0; 
+    nfeNumberInput.type = isChecked ? 'text' : 'number';
+
+    let intervalId = setInterval(() => {
+        if(canPaint){
+            paintChangeCount++;
+            nfeNumberInput.parentElement.parentElement.style.backgroundColor = '#22A39F90';
+            canPaint = false;
+        }      
+        else if(nfeNumberInput.parentElement.parentElement.getAttribute('style') !== null){
+            nfeNumberInput.parentElement.parentElement.removeAttribute('style');
+            canPaint = true;
+        }
+            
+        if(paintChangeCount > 3){
+            clearInterval(intervalId);
+            if(nfeNumberInput.parentElement.parentElement.getAttribute('style') !== null)
+                nfeNumberInput.parentElement.parentElement.removeAttribute('style');
+        }           
+    }, 100);
+
+} );
+
 searchBtn.addEventListener('click', () => {
     searchBtn.disabled = true;
 
