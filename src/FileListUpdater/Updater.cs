@@ -337,6 +337,7 @@ namespace NFeAssistant.FileListUpdater
                 List<FileInfo> fileList;
                 // Espera 5 segundos antes do arquivo ser lido.
                 Thread.Sleep(5000);
+                NFeAssistant.Cache.Cache.RemoveContentFromCacheByFile(new FileInfo(e.FullPath) );
                 switch(Path.GetExtension(e.FullPath).ToLower() )
                 {
                     case ".xml":
