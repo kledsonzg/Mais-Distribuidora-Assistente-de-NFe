@@ -32,13 +32,13 @@ namespace NFeAssistant.ExcelBase
             var firstRow = sheet.GetRow(2);
             int lastContentRow = -1;
 
-            sheet.ShiftRows(3, sheet.LastRowNum, rows.Length - 1, true, false);
+            if(rows.Length > 1)
+                sheet.ShiftRows(3, sheet.LastRowNum, rows.Length - 1, true, false);
+            
             for(int i = 2; i < rows.Length + 2; i++)
             {
                 var index = i - 2;
-                var row = sheet.GetRow(i);
-                if(row == null)
-                    row = sheet.CreateRow(i);
+                var row = sheet.GetRow(i) ?? sheet.CreateRow(i);
                 
                 var date = Util.Functions.GetDateTimeFromString(rows[index].EmissionDate);
                 var cells = new ICell[]{ row.GetCell(0) ?? row.CreateCell(0), row.GetCell(1) ?? row.CreateCell(1), row.GetCell(2) ?? row.CreateCell(2), row.GetCell(3) ?? row.CreateCell(3), row.GetCell(4) ?? row.CreateCell(4),
@@ -85,9 +85,9 @@ namespace NFeAssistant.ExcelBase
                 var weightSumCell = sumCells[1];
                 var valueSumCell = sumCells[2];
 
-                volumeSumCell.CellFormula = $"SUM(E3:E{lastContentRow})";
-                weightSumCell.CellFormula = $"SUM(F3:F{lastContentRow})";
-                valueSumCell.CellFormula = $"SUM(G3:G{lastContentRow})";
+                volumeSumCell.CellFormula = $"SUMIF(E1:E{lastContentRow}, \">0\") & \" VOLUMES\"";
+                weightSumCell.CellFormula = $"SUMIF(F1:F{lastContentRow}, \">0\") & \" Peso Kg\"";
+                valueSumCell.CellFormula = $"SUMIF(G1:G{lastContentRow}, \">0\")";
 
                 volumeSumCell.SetCellType(CellType.Formula);
                 weightSumCell.SetCellType(CellType.Formula);
