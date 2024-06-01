@@ -79,6 +79,7 @@ h2{
     border: none;
     left: 5px;
     width: 95%;
+    background-color: transparent;
 }
 .column-input input:focus{
     outline: none;
