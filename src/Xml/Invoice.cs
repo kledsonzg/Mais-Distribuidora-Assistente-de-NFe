@@ -1,28 +1,30 @@
 using System.Xml;
 using Newtonsoft.Json;
 using NFeAssistant.Invoice;
+using NFeAssistant.Main;
 using NFeAssistant.Util;
 
 namespace NFeAssistant.Xml
 {
-    internal class Invoice
+    public class Invoice
     {
         private XmlDocument Document { get; }
 
-        [JsonProperty] internal Client Client;
-        [JsonProperty] internal ShippingCompany ShippingCompany;
-        [JsonProperty] internal InvoiceValue Value;
-        [JsonProperty] internal List<Product> Products;
-        [JsonProperty] internal DateTime Emission;
-        [JsonProperty] internal DateTime Shipment;
-        [JsonProperty] internal string FilePath { get; }   
-        [JsonProperty] internal string NumberCode;
-        [JsonProperty] internal string AccessKey;
-        [JsonProperty] internal float Weight;
-        [JsonProperty] internal float Volumes;
-        [JsonProperty] internal bool NoFails { get { return AllRight; } }
+        public Client Client;
+        public ShippingCompany ShippingCompany;
+        public InvoiceValue Value;
+        public List<Product> Products;
+        public DateTime Emission;
+        public DateTime Shipment;
+        public string FilePath { get; }   
+        public string NumberCode;
+        public string AccessKey;
+        public float Weight;
+        public float Volumes;
+        public bool NoFails { get { return AllRight; } }
         private bool AllRight;
 
+        private Invoice(){}
 
         private Invoice(string filePath) 
         {
@@ -38,6 +40,36 @@ namespace NFeAssistant.Xml
 
             // Liberar os recursos.
             Document = new();
+        }
+
+        private Invoice(Invoice invoiceToClone, string filePath)
+        {
+            AllRight = true;
+
+            Client = invoiceToClone.Client;
+            ShippingCompany = invoiceToClone.ShippingCompany;
+            Value = invoiceToClone.Value;
+            Products = invoiceToClone.Products;
+            Emission = invoiceToClone.Emission;
+            Shipment = invoiceToClone.Shipment;
+            FilePath = filePath;
+            NumberCode = invoiceToClone.NumberCode;
+            AccessKey = invoiceToClone.AccessKey;
+            Weight = invoiceToClone.Weight;
+            Volumes = invoiceToClone.Volumes;
+        }
+
+        internal static Invoice? GetFromInvoiceDatabaseModel(Database.Model.InvoiceModel model)
+        {
+            var json = JsonConvert.SerializeObject(model);
+            var invoice = JsonConvert.DeserializeObject<Invoice>(json);
+            //Program.PrintLine(json);
+
+            if(invoice == null)
+                return null;
+
+            
+            return new(invoice, model.FilePath);
         }
 
         internal static Invoice? GetFromXMLFile(string filePath)
