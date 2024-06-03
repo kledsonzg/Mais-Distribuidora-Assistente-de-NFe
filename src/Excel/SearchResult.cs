@@ -15,6 +15,7 @@ namespace NFeAssistant.ExcelBase
             Content = "";
             CellAddress = "";
             FilePath = "";
+            SheetName = "";
             Type = ColumnType.COLUMN_UNDEFINED;
         }
     }
