@@ -6,7 +6,7 @@ namespace NFeAssistant.ExcelBase
 {
     internal static class Viewer
     {
-        internal static bool View(Stream requestBodyStream, HttpListenerResponse requestResponse)
+        internal static bool View(Stream requestBodyStream)
         {
             try
             {
