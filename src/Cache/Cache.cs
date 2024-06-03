@@ -48,6 +48,22 @@ namespace NFeAssistant.Cache
             return InsertSummaryFileIntoCache(fileInfo, fileInfo.FullName);
         }
 
+        internal static void InsertInvoiceIntoCache(Xml.Invoice invoice)
+        {
+            lock(_invoiceList)
+            {
+                _invoiceList.Add(invoice);
+            }
+        }
+
+        internal static void InsertInvoicesIntoCache(List<Xml.Invoice> invoices)
+        {
+            lock(_invoiceList)
+            {
+                _invoiceList.AddRange(invoices);
+            }
+        }
+
         internal static bool InsertInvoiceFileIntoCache(FileInfo fileInfo)
         {
             var invoice = Xml.Invoice.GetFromXMLFile(fileInfo.FullName);
