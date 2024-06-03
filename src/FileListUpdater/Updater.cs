@@ -30,6 +30,7 @@ namespace NFeAssistant.FileListUpdater
             InsertInvoicesIntoCache();
 
             Program.PrintLine("Processo de cache concluído!");
+            Database.Invoice.SaveAll();
         }
 
         private static void InsertSummariesIntoCache()
@@ -102,7 +103,16 @@ namespace NFeAssistant.FileListUpdater
 
         private static void InsertInvoicesIntoCache()
         {
-            Parallel.ForEach(_xmlFileList, (fileInfo) => 
+            // Antes de criar os objetos de nota fiscal através dos arquivos '.xml', podemos economizar o tempo de leitura dos arquivos obtendo as informações das notas fiscais que já estão no banco de dados.
+            Cache.Cache.InsertInvoicesIntoCache(Database.Invoice.GetAll() );
+            // Agora que obtemos os objetos do banco de dados, podemos remover os arquivos que já se tornaram objetos da lista de 'FileInfo(s)'.
+            List<FileInfo> list = new(_xmlFileList);
+            foreach(var invoice in Cache.Cache.InvoiceList)
+            {
+                list.RemoveAll(filter => filter.FullName == new FileInfo(invoice.FilePath).FullName );
+            }
+
+            Parallel.ForEach(list, (fileInfo) => 
             {
                 bool result = InsertInvoiceIntoCacheInSafeMode(fileInfo);
                 if(!result)
@@ -229,6 +239,7 @@ namespace NFeAssistant.FileListUpdater
                 case ".xml":
                 {
                     InsertInvoiceIntoCacheInSafeMode(new FileInfo(e.FullPath) );
+                    Database.Invoice.SaveAll();
                     break;
                 }
                 case ".xlsx" : case ".xls":
@@ -281,6 +292,7 @@ namespace NFeAssistant.FileListUpdater
                     }
 
                     InsertInvoiceIntoCacheInSafeMode(file);
+                    Database.Invoice.SaveAll();
                     break;
                 }
                 case ".xlsx" : case ".xls":
@@ -344,6 +356,7 @@ namespace NFeAssistant.FileListUpdater
                     {
                         fileList = _xmlFileList;
                         InsertInvoiceIntoCacheInSafeMode(new FileInfo(e.FullPath) );
+                        Database.Invoice.SaveAll();
                         break;
                     }
                     case ".xlsx" : case ".xls":
