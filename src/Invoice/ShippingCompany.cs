@@ -2,16 +2,16 @@ using Newtonsoft.Json;
 
 namespace NFeAssistant.Invoice
 {
-    internal class ShippingCompany
+    public class ShippingCompany
     {
-        [JsonProperty] internal string Nome { get; set; }
-        [JsonProperty] internal string CNPJ { get; set; }
-        [JsonProperty] internal string IE { get; set; }
-        [JsonProperty] internal string Endereco { get; set; }
-        [JsonProperty] internal string Cidade { get; set; }
-        [JsonProperty] internal string Estado { get; set; }
+        public string Nome { get; set; }
+        public string CNPJ { get; set; }
+        public string IE { get; set; }
+        public string Endereco { get; set; }
+        public string Cidade { get; set; }
+        public string Estado { get; set; }
         
-        internal ShippingCompany()
+        public ShippingCompany()
         {
             Nome = "";
             CNPJ = "";

@@ -2,10 +2,10 @@ using Newtonsoft.Json;
 
 namespace NFeAssistant.Invoice
 {
-    internal class InvoiceValue
+    public class InvoiceValue
     {
-        [JsonProperty] internal float Produtos = 0f;
-        [JsonProperty] internal float Desconto = 0;
-        [JsonProperty] internal float Total = 0;
+        public float Produtos = 0f;
+        public float Desconto = 0;
+        public float Total = 0;
     }
 }

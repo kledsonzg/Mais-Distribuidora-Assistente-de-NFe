@@ -1,17 +1,17 @@
 namespace NFeAssistant.Invoice
 {
-    internal class Client
+    public class Client
     {
-        internal string Nome { get; set; }
-        internal string Cidade { get; set; }
-        internal string Bairro { get; set; }
-        internal string Estado { get; set; }
-        internal string CNPJ { get; set; }
-        internal string CPF { get; set; }
-        internal string Endereco { get; set; }
-        internal string CEP { get; set; }
-        internal string EnderecoNumero { get; set; }
-        internal Client()
+        public string Nome { get; set; }
+        public string Cidade { get; set; }
+        public string Bairro { get; set; }
+        public string Estado { get; set; }
+        public string CNPJ { get; set; }
+        public string CPF { get; set; }
+        public string Endereco { get; set; }
+        public string CEP { get; set; }
+        public string EnderecoNumero { get; set; }
+        public Client()
         {
             Nome = "";
             Cidade = "";
