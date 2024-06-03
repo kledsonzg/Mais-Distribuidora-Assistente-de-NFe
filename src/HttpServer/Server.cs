@@ -5,6 +5,7 @@ using NFeAssistant.ExcelBase;
 using NFeAssistant.Interface;
 using NFeAssistant.Main;
 using NFeAssistant.Xml;
+using NPOI.Util.ArrayExtensions;
 
 namespace NFeAssistant.HttpServer
 {
@@ -16,6 +17,12 @@ namespace NFeAssistant.HttpServer
         {
             var httpServer = new HttpListener();
             httpServer.Prefixes.Add("http://127.0.0.1:3344/");
+
+            foreach(var ipConfig in Program.Config.Properties.App.WebPageIpConfig)
+            {
+                Program.PrintLine("SERVIDOR PERSONALIZADO: " + ipConfig);
+                httpServer.Prefixes.Add(ipConfig);
+            }
             
             FileServer = new FileServer();
             httpServer.Start();
@@ -73,12 +80,12 @@ namespace NFeAssistant.HttpServer
             {
                 case "/":
                 {
-                    RespondRequest(response, HttpStatusCode.OK, FileServer.GetBytesFromFile("index.html", true) );
+                    RespondRequest(response, HttpStatusCode.OK, FileServer.GetBytesFromFile("index.html", true) ?? Array.Empty<byte>() );
                     return;
                 }
                 case "/folder-suggestion": case "/folder-suggestion/":
                 {
-                    string folderInput;
+                    string? folderInput;
                     try
                     {
                         folderInput = request.QueryString["input"];
@@ -105,7 +112,7 @@ namespace NFeAssistant.HttpServer
                 }
                 case "/generateSummary":
                 {
-                    RespondRequest(response, HttpStatusCode.OK, FileServer.GetBytesFromFile("pages/summary-generation.html", true) );
+                    RespondRequest(response, HttpStatusCode.OK, FileServer.GetBytesFromFile("pages/summary-generation.html", true) ?? Array.Empty<byte>() );
                     return;
                 }
                 case "/generate":
@@ -158,12 +165,12 @@ namespace NFeAssistant.HttpServer
                 }
                 case "/summarySearch":
                 {
-                    RespondRequest(response, HttpStatusCode.OK, FileServer.GetBytesFromFile("pages/summary-search.html", true) );
+                    RespondRequest(response, HttpStatusCode.OK, FileServer.GetBytesFromFile("pages/summary-search.html", true) ?? Array.Empty<byte>() );
                     return;
                 }
                 case "/summaryOpen":
                 {
-                    bool success = Viewer.View(request.InputStream, response);
+                    bool success = Viewer.View(request.InputStream);
                     if(success)
                         RespondRequest(response, HttpStatusCode.OK, Array.Empty<byte>() );
                     else RespondRequest(response, HttpStatusCode.NotFound, Array.Empty<byte>() );
@@ -185,7 +192,7 @@ namespace NFeAssistant.HttpServer
                 }
                 case "/volumeContentIdentification":
                 {
-                    RespondRequest(response, HttpStatusCode.OK, FileServer.GetBytesFromFile("pages/volume-identification.html", true) );
+                    RespondRequest(response, HttpStatusCode.OK, FileServer.GetBytesFromFile("pages/volume-identification.html", true) ?? Array.Empty<byte>() );
                     return;
                 }
                 case "/import-nfs":
