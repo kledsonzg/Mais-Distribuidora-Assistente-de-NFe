@@ -64,7 +64,7 @@ namespace NFeAssistant.Xml
             var valuesElement = root.SelectSingleNode(".//total/ICMSTot");
             var shippingCompanyElement = root.SelectSingleNode(".//transporta");
             var productsElements = root.GetElementsByTagName("det");
-            var shippingInfoElement = root.SelectSingleNode(".//transp/vol");
+            var shippingInfoElement = root.SelectNodes(".//transp/vol");
             var invoiceProtocolElement = root.SelectSingleNode(".//protNFe/infProt");
             
             if(aboutInvoiceElement == null || clientElement == null || valuesElement == null || shippingInfoElement == null || invoiceProtocolElement == null)
@@ -92,22 +92,47 @@ namespace NFeAssistant.Xml
             return true;
         }
 
-        private bool SetVolumetry(XmlNode shippingInfoElement)
+        private bool SetVolumetry(XmlNodeList volumeElements)
         {
-            var volumeElement = shippingInfoElement.SelectSingleNode(".//qVol");
-            var weightElement = new XmlNode[]{shippingInfoElement.SelectSingleNode(".//pesoL"), shippingInfoElement.SelectSingleNode(".//pesoB")};
+            int count = 0; // Volumetria.
+            float netWeight = 0f; //Peso liquido.
+            float grossWeight = 0f; //Peso bruto.
+            
+            if(volumeElements.Count > 0) for(int i = 0; i < volumeElements.Count; i++)
+            {
+                var element = volumeElements[i];
+                if(element == null)
+                    continue;
+                
+                var volElement = element.SelectSingleNode(".//qVol") ?? element.SelectSingleNode(".//nVol");
+                if(volElement == null)
+                    continue;
 
-            if(volumeElement == null)
-                return false;
-            if(weightElement[0] == null)
-                NetWeight = 0f;
-            else 
-                float.TryParse(weightElement[0].InnerText.Replace('.', ','), out NetWeight);
-            if(weightElement[1] == null)
-                GrossWeight = 0f;
-            else float.TryParse(weightElement[1].InnerText.Replace('.', ','), out GrossWeight);
+                int _count;
+                int.TryParse(volElement.InnerText.Replace('.', ','), out _count);
 
-            float.TryParse(volumeElement.InnerText.Replace('.', ','), out Volumes);
+                string[] weightElementsTags = new string[]{"pesoL", "pesoB"};
+                float[] weights = new float[weightElementsTags.Length];
+                for(int j = 0; j < weightElementsTags.Length; j++)
+                {
+                    try
+                    {
+                        float.TryParse(element.SelectSingleNode($".//{weightElementsTags[j]}")?.InnerText.Replace('.', ','), out weights[j] );
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+
+                count += _count;
+                netWeight += weights[0];
+                grossWeight += weights[1];
+            }
+
+            NetWeight = netWeight;
+            GrossWeight = grossWeight;
+            Volumes = count;
             return true;
         }
 
