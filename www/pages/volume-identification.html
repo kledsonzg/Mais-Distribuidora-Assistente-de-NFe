@@ -1,0 +1,112 @@
+<html>
+    <head>
+        <title>Assistente de NFe - Caixa Identificada</title>
+        <link rel="stylesheet" href="../style/css/index.css">
+        <link rel="stylesheet" href="../style/css/volume-identification.css">
+        <link rel="stylesheet" href="../style/css/volume-identification-sorting.css">
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <header>
+            <div id="header-left-side">
+                <img id="header-image-logo" src="../style/images/logo.png" alt="mais-distribuiddora-logo" title="Página inicial" onclick="window.location.assign('/index.html')">
+            </div>
+            <div id="header-right-side">
+                <a class="header-btn" href="/summarySearch">
+                    <span>PROCURAR</span>
+                    <span>NOS</span>
+                    <span>RELATORIOS</span>
+                </a>
+                <a class="header-btn 2" href="/generateSummary" style="--btn-icon: url('/style/images/column-chart-icon.png');">
+                    <span>GERAR</span>
+                    <span>RELATORIO</span>
+                </a>
+            </div>
+        </header>
+        <div id="volume-identification-form" class="">
+            <h1>GERAR CAIXA IDENTIFICADA:</h1>
+            <div class="form-container">
+                <b>NFE:</b>
+                <input type="number" id="form-input-nfe">
+                <button id="btn-add-nfe">ADICIONAR</button>
+            </div>
+            <div id="nfe-list">
+                <h2>NF's A SEREM IMPORTADAS:</h2>
+                <li class="hidden li-model"><span>teste</span>
+                    <button class="btn-remove-nf">REMOVER</button>
+                </li>
+                <ol>
+                </ol>
+                <span class="nfe-list-empty-alert">NENHUMA NOTA INSERIDA</span>
+            </div>
+            <div id="form-btns-container">
+                <button class="btn" id="btn-import-nfs">IMPORTAR NOTAS FISCAIS</button>
+                <button class="btn" id="btn-reset">RESETAR</button>
+            </div>     
+        </div>
+        <div id="result-container-body" class="hidden">
+            <div id="floating-selected-volume-info" class="hidden">
+                <img src="../style/images/box-open.png">
+                <span id="floating-msg">INSERINDO NO VOLUME: 00</span>
+            </div>
+            <div id="column-right">
+                <img id="btn-hide-column-right" src="../style/images/boxes.png" alt="Ocultar menu flutuante" title="Ocultar menu flutuante" style="border-bottom: 3px solid #ECB159; top: 1px;">
+                <div id="btns-volumes">
+                </div>
+                <img id="btn-insert-new-volume" src="../style/images/addition-color-icon.png" alt="Novo volume" title="Inserir novo volume">
+                <img id="btn-generate" src="../style/images/check-mark-square-icon.png" alt="Gerar" title="Gerar caixas identificadas">
+            </div>
+            <div id="result-container">
+                <div id="content-replacer-container">
+                    <h2>SUBSTITUIDOR DE PALAVRAS:</h2>
+                    <div id="content-replacer-form">
+                        <span>PROCURAR:</span>
+                        <input type="text" id="input-search-string">
+                        <span>SUBSTITUIR:</span>
+                        <input type="text" id="input-replace-string">
+                        <button id="btn-apply-replacement">APLICAR</button>
+                    </div>          
+                </div>
+                <div class="nf-content-container model hidden">
+                    <div class="nf-content-title">
+                        <h2>NOTA FISCAL: 00000</h2>
+                    </div>
+                    <div class="nf-content">
+                        <input class="input-nf-content-product" type="text">
+                        <input class="input-nf-content-quantity" type="number" size="4">
+                        <button class="btn-nf-content-add">INSERIR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="floating-window">
+            <div id="volume-content-window">
+                <div id="volume-content-header">
+                    <h3>CAIXA IDENTIFICADA: 00</h3>
+                    <div id="close-container">
+                        <img src="../style/images/close-square-icon.png" alt="Fechar janela" title="Fechar janela">
+                    </div>                 
+                </div>
+                <div id="volume-content-result-container">
+                    <div class="volume-content-row model hidden">
+                        <span class="volume-content-column-name">CONTEUDO 1</span>
+                        <b class="volume-content-column-quantity">10UN</b>
+                        <div class="volume-content-column-btn">
+                            <img class="volume-content-btn-delete" src="../style/images/red-trash-can-icon.png" alt="Deletar" title="Remover conte&uacute;do deste volume">
+                        </div>             
+                    </div>
+                </div>
+            </div>
+        </div>  
+        <footer>
+            <div id="footer-credits">
+                <div><span>Desenvolvido por <b>KledsonZG</b></span></div>   
+                <a href="https://github.com/kledsonzg">
+                    <img class="footer-img" src="../style/images/github-icon.png" alt="KledsonZG's Github Profile" title="GitHub: KledsonZG">
+                </a>
+            </div>       
+        </footer>
+        <script src="../scripts/volume-identification-form.js"></script>
+        <script src="../scripts/volume-identification-interaction.js"></script>
+    </body>
+</html>

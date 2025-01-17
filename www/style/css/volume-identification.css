@@ -1,0 +1,114 @@
+/* CSS Document */
+
+.hidden{  
+    position: fixed !important;
+    width: 0 !important; height: 0 !important;
+    visibility: hidden;
+}
+
+#volume-identification-form{
+    position: relative;
+    top: 15%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#volume-identification-form h1{
+    font-family: Arial;
+    text-decoration: underline;
+}
+
+.form-container{
+    position: relative;
+
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100px;
+    align-items: center;
+    justify-content: space-evenly;
+    border-bottom: #ECB159 solid 5px;
+}
+.form-container input{
+    position: relative;
+    flex: 1;
+    height: 2rem;
+    font-size: 1.5rem;
+    outline: 0;
+    border: 0;
+    border-bottom: #ECB159 1px solid;
+}
+.form-container button{
+    position: relative;
+    height: 2rem;
+    background-color: #ECB159;
+    border: solid 2px black;
+    font-family: Arial;
+    cursor: pointer;
+}
+.form-container button:hover{
+    background-color: #f2d5a8;
+}
+
+#nfe-list{
+    position: relative;
+    width: 100%;
+    border-bottom: #ECB159 5px solid;
+    text-align: center;
+}
+#nfe-list button{
+    position: relative;
+    float: right;
+    background-color: #561C24;
+    border: solid 2px black;
+    font-weight: bold;
+    justify-self: center;
+    align-self: center;
+    cursor: pointer;
+}
+#nfe-list button:hover{
+    background-color: #6D2932;
+    font-size: 1rem;
+}
+#nfe-list li{
+    position: relative;
+    color: #ECB159;
+    font-family: Arial;
+    font-weight: bold;
+    font-size: 1.5rem;
+    align-items: center;
+    border-bottom: #ECB159 dotted 2px;
+}
+
+.btn{
+    position: relative;
+    border: 2px solid black;
+    font-family: Arial;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 1.3rem;
+    top: 15px;
+}
+.btn:hover{
+    font-size: 1.4rem;
+}
+#btn-import-nfs{
+    background-color: #416D19;
+}
+#btn-import-nfs:hover{
+    background-color: #9BCF53;
+}
+#btn-reset{
+    background-color: #434242;
+}
+#btn-reset:hover{
+    background-color: gray;
+}
+
+.nfe-list-empty-alert{
+    position: relative;
+    text-decoration: underline double;
+    color: red;
+}

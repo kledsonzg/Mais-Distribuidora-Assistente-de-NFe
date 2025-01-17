@@ -1,0 +1,46 @@
+/* CSS Document */
+#result-container{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    top: 15%;
+    flex: 1;
+    width: 100%;
+}
+
+.result-file-container{
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid black;
+    padding: 0; margin: 0; top: 0;
+}
+.result-title{
+    width: 100%;
+    text-align: center;
+    background-color: #ECB159;
+}
+.result-content{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+.result-content-info{
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: help;
+}
+.result-content-info img{
+    height: 25px; width: 20px;
+}
+.result-value-container{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    width: 10%;
+}

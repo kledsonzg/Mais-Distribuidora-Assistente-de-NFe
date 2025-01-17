@@ -1,0 +1,137 @@
+/* CSS Document */
+
+@keyframes advanced-control-panel-reveal {
+    from{
+        color: transparent;
+        top: -25px;
+        background-color: transparent;
+        border: none;
+    }
+    to{
+        top: 0px;
+        color: unset;
+        background-color: unset;
+    }
+}
+
+h2{
+    align-self: center;
+}
+
+#main{
+    position: relative;
+    display: flex;
+    top: 15%;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    flex-direction: column;
+    flex: 1;
+}
+#main-title{
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+#main-subtitle{
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+}
+.hidden{  
+    position: fixed !important;
+    width: 0 !important; height: 0 !important;
+    visibility: hidden;
+}
+.input-row{
+    position: relative;
+    padding-top: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: solid 1px #ECB159;
+}
+.column-info{
+    position: relative;
+    display: flex;
+    font-size: 1.5rem;
+    flex-direction: row;
+    align-items: center;
+    width: 50%;
+}
+.column-info b{
+    width: 100%;
+    text-align: end;
+}
+
+.column-input{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 50%;
+}
+.column-input input{
+    position: relative;
+    font-size: 1.5rem;
+    border: none;
+    left: 5px;
+    width: 95%;
+}
+.column-input input:focus{
+    outline: none;
+}
+.checkbox{
+    position: relative;
+}
+
+.btn-row{
+    padding-top: 20px;
+    justify-content: space-evenly;
+}
+.btn-row button{
+    position: relative;
+    font-size: 1.3rem;
+    font-family: Arial;
+    font-weight: bold;
+    border-radius: 5px;
+    border: 2px solid;
+    cursor: pointer;
+}
+
+.advanced-control-row{
+    position: relative;
+    display: flex;
+}
+.advanced-control-row.anim{
+    animation: normal 0.5s advanced-control-panel-reveal;
+}
+.advanced-control-row input{
+    font-size: 1.2rem;
+    background-color: #ECB159;
+    border: 1px solid black;
+}
+.column-advanced-control{
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+#btn-search{
+    background-color: #416D19;
+}
+#btn-search:hover{
+    background-color: #9BCF53;
+}
+#btn-reset{
+    background-color: #561C24;  
+}
+#btn-reset:hover{
+    background-color: #6D2932;
+}
+#btn-advanced:hover{
+    background-color: darkgrey;
+}
