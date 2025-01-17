@@ -104,7 +104,7 @@ function generateSummary(){
         },
         weight: {
             precise: checkboxes[2].checked,
-            importGrossWeight: document.getElementById('checkbox-import-gross-weight').checked,
+            isGrossWeight: document.getElementById('checkbox-import-gross-weight').checked,
             value: document.querySelector('#input-weight').value.replaceAll('.', ',')
         },
         outputFolder: folderInput.value
